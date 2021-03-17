@@ -77,3 +77,9 @@ git config --global credential.helper store
 ```
 
 After the next push, Git will store your credentials.
+
+To disable the credential manager, run:
+
+```bash
+git config --global --unset credential.helper
+```
