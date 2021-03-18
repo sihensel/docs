@@ -1,12 +1,14 @@
+# Git
 
-# How to use Git
+## Git Commands
 
 Command | Meaning
 --- | ---
-git clone | clones the repo from the url
+git clone https://github.com/user/repo.git | clones the repo using https
+git clone git@github.com:user/repo..git | clones the repo using ssh
 git add | adds all the specified files to the local git repo
 git add -u | adds all _modified_ files to the local git repo
-git commit -m "Commit Message" | Commit the changes with a message
+git commit -m "Commit Message" | Commit the changes (a message is necessary)
 git push | pushes the commits from the local repo to the remote repo 
 git pull | pull all changes from the remote repo to the local repo
 
@@ -17,37 +19,39 @@ git pull | pull all changes from the remote repo to the local repo
 
 Generate the the ssh keypair (if you don't already have one).
 
-```bash
+```sh
 ssh-keygen -t rsa -b 4096
 ```
-The keys get stored in the `~/.ssh` direcotry.
+The keys are located in the `~/.ssh` direcotry.
 
 ### Work with your keys
 
-Then, add the keys to the `ssh-agent`.
+Add the keys to the `ssh-agent`.
 Make sure, `ssh-agent` is running:
 
-```bash
-eval "$(ssh-agent -s)"  # or
+```sh
+eval "$(ssh-agent -s)"  # Linux/Mac
 ssh-agent -s            # for windows
 ```
 
 Then add the keys.
 
-```bash
+```sh
 ssh-add ~/.ssh/id_rsa
 ```
 
+__Note__: This only works within the current shell. To make this setting persitent, add your ssh keys to the keyring.
+
 Then, copy your public key (`~/.ssh/id_rsa.pub`) to Github.
 
-```bash
+```sh
 cat ~/.ssh/id_rsa.pub # Linux
 clip < ~/.ssh/id_rsa.pub # Windows
 ```
 
 Test your connection:
 
-```bash
+```sh
 ssh -T git@github.com
 ```
 
@@ -55,24 +59,24 @@ ssh -T git@github.com
 
 Change your directory to a local repo and run:
 
-```bash
+```sh
 git remote set-url origin git@github.com:username/your-repository.git
 ```
 
 Or clone a new repo with:
 
-```bash
+```sh
 git clone git@github.com:username/your-repository.git
 ```
 
-This way, ssh is enabled OOTB and you don't have to enter your password or change your repo any more.
-
+This way, ssh is enabled OOTB and you don't have to enter your password or change your repo any more.  
+Alternatively, Github Tokens can also be used for authentication.
 
 # DEPRECATD - DON'T USE !!!
 
 If you want Git to remember your username and password, use:
 
-```bash
+```sh
 git config --global credential.helper store
 ```
 
