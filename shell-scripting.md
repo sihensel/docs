@@ -1,12 +1,16 @@
 # Shell Scripting
 
+Use [spellcheck.net](https://www.shellcheck.net/) to check your script for errors!
+
 ## Comments
 
 Comments are defined by a leading `#`. They start at the position of the `#`-symbol until the end of the line.
 The _Shebang_ (see below) is also a comment.
 
 ```sh
-:'Multiline comments
+# single line comment
+
+:' Multiline comments
 work like
 this
 ```
@@ -136,7 +140,7 @@ Bash also supports double square brackets `[[ ]]` that allow additional features
 For-loops are use to iterate over a sequence of values.
 
 ```sh
-for i in 1 2 3 4 5; do
+for i in {1..5}; do
     echi "$i"
 done
 ```
@@ -152,4 +156,15 @@ done
 for i in "${!array[@]}"; do
     echo "$i"
 done
+```
+
+## Funcitons
+
+Functions take input parameters and return output parameters.
+Note that the `function` keyword is not necessarily needed.
+
+```sh
+function myfunc() {
+    # code here
+}
 ```

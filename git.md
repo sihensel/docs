@@ -80,9 +80,6 @@ If you want Git to remember your username and password, use:
 git config --global credential.helper store
 ```
 
-<<<<<<< HEAD
-After the next push, Git will store your credentials.
-=======
 After the next push, Git will store your credentials.
 
 To disable the credential manager, run:
@@ -90,4 +87,3 @@ To disable the credential manager, run:
 ```bash
 git config --global --unset credential.helper
 ```
->>>>>>> f07381e3d2e46be54ed1d11bd497b2beea0564ad
