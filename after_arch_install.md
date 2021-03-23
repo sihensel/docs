@@ -5,111 +5,97 @@ After the you might wonder, what to do now.
 This guide provides some useful steps you might want to take after a clean Arch install.
 Please read all the steps before executing them, as you might not need all of them.
 
-
-
 ## Add a user
 
 After a plain Arch install there is only the root user. Since you don't want to be logged in as root all the time, we need to add another regular user.
 
 Edit the `sudoers`-file at `/etc/sudoers` with vim or nano.
 
-```bash
+```sh
 sudo EDITOR=vim visudo
 ```
 
 Uncomment the line that says `%wheel ALL=(ALL) ALL`.
 Then, we add a new user called `simon` to the `wheel` group we just uncommented.The user gets his own `/home` directory.
 
-```bash
-useradd -m -G wheel -s /bin/bash simon
+```sh
+useradd -m -G wheel -s /bin/sh simon
 ```
 
 As a last step, the user needs a password:
 
-```bash
+```sh
 passwd simon
 ```
 
 Enter a password and confirm it.
-
-
 
 ## Install yay (AUR package manager)
 
 [Yay](https://github.com/Jguer/yay) is a package manager, that enables you to install and maintain packages from the AUR (Arch User Repository).
 First, install git:
 
-```bash
+```sh
 sudo pacman -S git
 ```
 
 Then, clone the git repository of yay:
 
-```bash
+```sh
 git clone https://aur.archlinux.org/yay.git
 ```
 
 Navigate into the yay directory:
 
-```bash
+```sh
 cd yay
 ```
 
 And install the Package
 
-```bash
+```sh
 makepkg -si
 ```
 
 You might want to remove the build dependency `Go` afterwards:
 
-```bash
+```sh
 pacman -Rns go
 ```
-
-
-
-
 
 ## Install Nvidia drivers
 
 If you have an Nvidia graphics card, install the Nvidia drivers:
 
-```bash
+```sh
 sudo pacman -S nvidia #or
 sudo pacman -S nvidia-lts
 ```
-
-
 
 ## Install and enable some useful services
 
 Some services are really usefull for resource and disk management.
 
-```bash
+```sh
 sudo pacman -S acpid ntp dbus avahi cups cronie
 ```
 
 Then, enable these services, so they get automatically started at boot.
 
-```bash
+```sh
 systemctl enable acpid
 systemctl enable ntpd
 systemctl enable avahi-daemon
 systemctl enable org.cups.cupsd.service
 ```
 
-
-
 ## Install sound server
 
-```bash
+```sh
 sudo pacman -S pulseaudio alsa-utils pavucontrol pulseaudio-alsa
 ```
 
 This installs the pulseaudio sound server and the alsa mixer, a tool within the terminal to control different sound channels. It can also be controlled by pavucontrol. Restart the system after pulseaudio is installed.
-
-
 
 ## Install a graphical user interface (GUI)
 
@@ -121,7 +107,7 @@ In this case, we install the GNOME desktop environment. For other desktop enviro
 
 First, we need a display server:
 
-```bash
+```sh
 pacman -S xorg-server xorg-xinit
 ```
 
@@ -131,32 +117,33 @@ Alternatively, you can install wayland as a display server, but you might run in
 
 For optimal use of our system resources, a display driver is required.
 
-```bash
+```sh
 sudo pacman -S xorg-drivers
 ```
 
-
-
 ### Install Awesome with lightdm
 
-```bash
+```sh
 sudo pacman -S lightdm lightdm-gtk-greeter awesome
 sudo systemctl enable lightdm.service
 ```
 
-
-
 ## Install some useful utilities
 
-```bash
+```sh
 sudo pacman -S unzip gvfs udisks2
 ```
 
-
-
 ## Install useful programs
 
-```bash
+```sh
 sudo pacman -S thunar moc
 yay -S qview #or nomacs
+```
+
+## Network utilities
+
+```sh
+pacman -S dnsutils net-tools
+pacman -S wireshark-cli metasploit postgresql nmap
 ```
