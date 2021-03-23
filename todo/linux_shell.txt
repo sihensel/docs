@@ -109,3 +109,18 @@ nmap -p {Port} {IP Adress}      checks if the specified port is open at the dest
 
 --- extract tar files ---
 tar -xvzf <your file>
+
+
+
+
+--- SSH ---
+ssh root@host
+ssh -M root@host    # all further ssh connections will use the already established connection
+ssh -p 22 root@host # use a specific port
+
+screen          # opens a screen session
+CTRL+A CTRL+C   # create a new screen
+CTRL+A CTRL+A   # switch between screen
+CTRL+A <number> # goto specific screen
+CTRL+A CTRL+D   # detach from screen session
+screen -dr      # restore screen session
