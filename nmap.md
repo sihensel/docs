@@ -18,17 +18,16 @@ Some sites are [geoiplookup](http://geoiplookup.net) or [ipinfo.io](http://geoip
 
 To find out IP addresses for domains, or vice versa, use `nslookup`.
 
-```bash
-nslookup <IP or domain>
+```sh
+nslookup <IP or domain> # or
+dig <IP or domain>
 ```
 
 Ofc, these scan results can be saved in a log file:
 
-```bash
+```sh
 nslookup scanme.nmap.org >> log.txt
 ```
-
-
 
 ## Using NMAP
 
@@ -36,12 +35,12 @@ nslookup scanme.nmap.org >> log.txt
 
 Using the nmap command without parameters scans 1000 ports whether they are open.
 
-```bash
+```sh
 nmap scanme.nmap.org
 ```
 The result will look something like this:
 
-```bash
+```sh
 Starting Nmap 7.60 ( https://nmap.org ) at 2020-03-31 17:09 CEST
 Nmap scan report for scanme.nmap.org (45.33.32.156)
 Host is up (0.17s latency).
@@ -67,7 +66,7 @@ Also it's advisable to save all scans in a file, so you can access them later, e
 
 Nmap can scan a range of IP addresses for open ports:
 
-```bash
+```sh
 nmap -oG -192.168.1.0-255 -vv > ~/scan.txt
 ```
 
@@ -75,36 +74,34 @@ This scans the whole subnet and outputs extra information with the `-vv` paramet
 However, this method still takes a long time and it is better to target specific ports.
 To do so, just add the `-p` parameter.
 
-```bash
+```sh
 nmap -oG -192.168.1.0-255 -p 22 -vv > ~/scan.txt
 ```
-
-
 
 ## Aggressive Scans
 
 These allow for deeper scans and allow more information about the target.
 The `-A` (Aggressive) parameter scans for additional information, like the OS, OS version, scripts, a traceroute and so on.
 
-```bash
+```sh
 nmap -A scanme.nmap.org
 ```
 
 To scan for services and their version, use `-sV`. If one of these services have known vulnerabilities, you can abuse them.
 
-```bash
+```sh
 nmap -sV scanme.nmap.org
 ```
 
 To speed up the scan, use the `-F` (fast) flag. This only scans for the most used ports, like `http`, `ssh` or `mysql`.
 
-```bash
+```sh
 nmap -F scanme.nmap.org
 ```
 
 To scan multiple addresses at once, just specify them one by one.
 
-```bash
+```sh
 nmap -F scanme.nmap.org google.com > ~/log.txt
 ```
 
@@ -112,11 +109,9 @@ The output is formatted really well in aeasy to read manner. This also works wit
 
 To save even more time, just scan for open ports with the `--open` flag.
 
-```bash
+```sh
 nmap --open scanme.nmap.org
 ```
-
-
 
 # NMAP Scripting Engine (NSE)
 
@@ -125,27 +120,28 @@ The nmap scripts are stored in `/usr/share/nmap/scripts/`.
 
 To lost a specific sproct, just use `ls` and `grep`:
 
-```bash
+```sh
 ls -l /usr/share/nmap/scripts | grep ssh
 ```
 
 To use a acript, specify it with the `--script` flag.
 
-```bash
-nmap --script=ssh-hostkey.nse 192.168.1.1
+```sh
+nmap --script=ssh-hostkey 192.168.1.1
 ```
 
 To use all scripts available for all open ports, use the `-sC` flag.
 This runs all scripts mathing all open ports and enumerates the results.
 
-```bash
+```sh
 nmap -sC 192.168.1.1
 ```
 
-To brute force the ssh port, use the `ssh-brute.nse` script. This has its own password library, but you can provide your wown.
+To brute force the ssh port, use the `ssh-brute.nse` script. This has its own password library, but you can provide your own.
 
-```bash
-nmap --script=ssh-brute-nse
+```sh
+nmap --script=ssh-brute # or
+nmap --script=ssh-brute --script-args userdb=users.txt passdb=passwords.txt
 ```
 
 Generally, its is advisable to run all scripts for all open ports with `-sC` and then proceed with port specific scripts if some interesing information is found.
