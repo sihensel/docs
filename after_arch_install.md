@@ -68,8 +68,8 @@ pacman -Rns go
 If you have an Nvidia graphics card, install the Nvidia drivers:
 
 ```sh
-sudo pacman -S nvidia #or
-sudo pacman -S nvidia-lts
+sudo pacman -S nvidia # or
+sudo pacman -S nvidia-lts   # for use with the LTS-kernel
 ```
 
 ## Install and enable some useful services
@@ -139,6 +139,9 @@ sudo pacman -S unzip gvfs udisks2
 ```sh
 sudo pacman -S thunar moc
 yay -S qview #or nomacs
+
+sudo pacman -S darktable
+sudo pacman -S opencl-nvidia ocl-icd # OpenCL support for Darktable
 ```
 
 ## Network utilities
@@ -147,3 +150,4 @@ yay -S qview #or nomacs
 pacman -S dnsutils net-tools
 pacman -S wireshark-cli metasploit postgresql nmap
 ```
+
