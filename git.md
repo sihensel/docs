@@ -12,6 +12,14 @@ git commit -m "Commit Message" | Commit the changes (a message is necessary)
 git push | pushes the commits from the local repo to the remote repo 
 git pull | pull all changes from the remote repo to the local repo
 
+## Working with Branches
+
+Set up a new local branch with `git checkout -b 'brachName'`. This will automatically switch to the new branch.  
+To verify your current branch, use `git branch`. To switch branches use `git checkout branchName`.  
+Make your changes and commit them as usual.  
+Push your commits with `git push origin branchName`.  
+The branch can now be merged via pull request on Github and the branch can be deleted.  
+To pull down a branch from Github, use `git fetch origin branchName`. Now you can start working on that branch.
 
 ## Set up SSH with Git
 
