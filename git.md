@@ -23,7 +23,7 @@ To pull down a branch from Github, use `git fetch origin branchName`. Now you ca
 
 | Command                      | Meaning                                                  |
 | ---------------------------- | -------------------------------------------------------- |
-| git checkout -b              | Creates a branch called 'new_feature' and switches to it |
+| git checkout -b new_feature  | Creates a branch called 'new_feature' and switches to it |
 | git branch                   | shows the current branch                                 |
 | git checkout main            | switches to the branch 'main'                            |
 | git push origin new_feature  | pushes the local branch to remote                        |
