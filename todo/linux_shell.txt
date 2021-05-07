@@ -110,7 +110,8 @@ nmap -p {Port} {IP Adress}      checks if the specified port is open at the dest
 --- extract tar files ---
 tar -xvzf <your file>
 
-
+--- add directory to PATH ---
+export PATH=$PATH:your_directory
 
 
 --- SSH ---
