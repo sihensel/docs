@@ -17,6 +17,7 @@ command file-you-want-to-manipulate directory-you-want-to-change
 
 general comands:
 !!				executes the last issued command
+!$              use the last argument
 history				lists all the last issued commands
 apropos {search phrase} 	searches all programms for the specified search phrase
 {command} | column -t		displays the output of the command in a column table layout
@@ -46,6 +47,7 @@ ls /			lists all files and folders of the root directory
 cd			change directory to your users home directory
 cd /			change directory to root
 cd ..			up one directory
+cd -        cd into the last directory
 
 simon@ubuntu		user @ location (thats also where mail adresses come from)
 
@@ -67,6 +69,7 @@ ln -s test.txt test_link	creates a link to the file test.txt called test_link (q
 head file		lists the first 10 rows of a file
 tail file		lists the last 10 rows of a file
 tail -f file		lists the last 10 rows of a file and stays attached to the file, so you can see changes in real time (usefull for logging)
+tail -f file | grep "xyz"   log file and filter for keywords
 
 shutdown -r		restart
 shutdown -h		turn off (halt)
@@ -125,3 +128,24 @@ CTRL+A CTRL+A   # switch between screen
 CTRL+A <number> # goto specific screen
 CTRL+A CTRL+D   # detach from screen session
 screen -dr      # restore screen session
+
+
+--- writing shell output to a file ---
+method 1:
+command > file.txt          # this overwrites anything that is already inside the file
+comand >> file.txt          # this appends the output of the command to a file
+> file.txt                  # empty the specified file
+in both cases, the file gets created, if it doesn't exist
+method 2:
+command | tee file.txt      # this uses the tee command, which writes to a file and also displays the output of the command
+command | tee -a file.txt   # use tee in append mode
+
+--- running multiple commands at once ---
+command1 ; command2       # run command1 and then command2
+command1 && command2      # run command2 only if command1 succeeds
+command1 || command2      # run command2 only if command1 fails
+of course these logical operators can be combined in any way
+
+yes | command           # confirmes every action in a command or script
+
+grep -Pri Search_Term path_to_dir   # check if a file with the search term exists
