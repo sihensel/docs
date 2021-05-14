@@ -147,3 +147,23 @@ Command | Meaning
 --- | ---
 :!<command> | run external command
 :!ls | runs the `ls` command
+
+
+## g-Commands
+Command | Meaning
+--- | ---
+gj | moves a visual line, not a line in the editor (useful when text wraps, can be used with k as well)
+g0 | move to beginning of visual line
+g$ | move to end of visual line
+gq\<text-object> | add returns into a textblock so wrapped lines become real lines (eg. gq$ to end of line)
+gu\<test-object> | uncapitalize object
+guu | uncapitalize the whole line
+gU\<text-object> | capitalize object
+~ | toggle capitalization for one character
+g~\<text-object> | toggle capitalization for the object
+gf | open the file that is selected by the cursor (^ to return)
+gv | jump to the last selected text
+J | join lines
+gJ | join lines without spaces between the joined lines
+s/text-to-replace/replacement/g | replaces the specified text with a replacement for the whole line
+g& | apply the last substitution command to the whole file
