@@ -149,3 +149,6 @@ of course these logical operators can be combined in any way
 yes | command           # confirmes every action in a command or script
 
 grep -Pri Search_Term path_to_dir   # check if a file with the search term exists
+
+du          shows diskusage
+du -sh      show size of dir summarized and human readable

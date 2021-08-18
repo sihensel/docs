@@ -9,15 +9,16 @@ pacman -Syu | Upgrade whole system
 pacman -Ss | search package
 pacman -R | remove package
 pacman -Rs | remove package with dependencies
-pacman -Rns | remove system config files as well
+pacman -Rnscd | remove package and all that belongs to it
 pacman -Q | all installed packages
 pacman -Qe | all explicitly installed packages
 pacman -Qq | all installed packages without versions
 pacman -Qn | packges from main repositories
 pacman -Qm | all AUR packages
-pacman -Qdt | unneeded dependencies 
+pacman -Qdtq | list unneeded dependencies 
 pacman -Qs | search for local packages
 pacman -Sc | remove old packages from the cache
+yay -Yc | remove unneded packages (alternatively, use `sudo pacman -Rns $(pacman -Qtdq)`)
 
 
 Uncomment the line `Color` in `/etc/pacman.conf` to add colors to the pacman output.
