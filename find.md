@@ -1,4 +1,3 @@
-
 # Find
 
 Find is a unix program with a cli to find files and directories on your system.
@@ -8,8 +7,6 @@ General schema:
 ```bash
 find <Directory> <Option> <Pattern>
 ```
-
-
 
 ## Search for files
 
@@ -34,8 +31,6 @@ You can also search for case insensitive terms with the `-iname` flag.
 find -type f -iname 'Linux'
 ```
 
-
-
 ## Search for directories
 
 To search for a directory, use the `-type d` flag.
@@ -51,8 +46,6 @@ You can also use wildcard characters, like `*` to find files.
 sudo find / -name '*awesome*'
 ```
 
-
-
 ## Search by size
 
 You can search files by size or in a range of sizes with the `-size` flag.
@@ -60,8 +53,6 @@ You can search files by size or in a range of sizes with the `-size` flag.
 ```bash
 find . -size +500k -size -10M
 ```
-
-
 
 ## Seach by permission
 

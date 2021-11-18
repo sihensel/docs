@@ -2,15 +2,18 @@
 
 ## Git Commands
 
-| Command                                    | Meaning                                                   |
-| ------------------------------------------ | --------------------------------------------------------- |
-| git clone https://github.com/user/repo.git | clones the repo using https                               |
-| git clone git@github.com:user/repo.git     | clones the repo using ssh                                 |
-| git add                                    | adds all the specified files to the local git repo        |
-| git add -u                                 | adds all _modified_ files to the local git repo           |
-| git commit -m "Commit Message"             | Commit the changes (a message is necessary)               |
-| git push                                   | pushes the commits from the local repo to the remote repo |
-| git pull                                   | pull all changes from the remote repo to the local repo   |
+| Command                                    | Meaning                                                       |
+| ------------------------------------------ | ------------------------------------------------------------- |
+| git clone https://github.com/user/repo.git | clones the repo using https                                   |
+| git clone git@github.com:user/repo.git     | clones the repo using ssh                                     |
+| git add                                    | adds all the specified files to the local git repo            |
+| git add -u                                 | adds all _modified_ files to the local git repo               |
+| git commit -m "Commit Message"             | Commit the changes (a message is necessary)                   |
+| git push                                   | pushes the commits from the local repo to the remote repo     |
+| git pull                                   | pull all changes from the remote repo to the local repo       |
+| git pull --rebase origin master            | rebases the local branch to the remote master                 |
+| git rebase -i HEAD~3                       | start interactive rebase for the last 3 commits               |
+| git rebase -i \<commit hash>               | start interactive rebase starting __after__ the stated commit |
 
 ## Working with Branches
 

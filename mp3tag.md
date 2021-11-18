@@ -1,4 +1,3 @@
-
 # MP3wrap
 
 Navigate to the folder will the mp3 files.
@@ -11,8 +10,6 @@ mp3wrap output.mp3 *.mp3 && cd ..
 ```
 
 This merges all mp3 files into the file `output.mp3`.
-
-
 
 # MP3tag
 
