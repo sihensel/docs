@@ -3,15 +3,9 @@
 
 This guide describes how to install Arch Linux on a Huawei Matebook 13 (2020) and enabling most of its features.
 
-[TOC]
-
-
-
 # Before the Installation
 
 If Windows is already installed, leave it that way. You just need to partition to disk accordingly to your needs. Shrink the Windows partition using Windows, and create new partitions using `fdisk`. Also Secure Boot needs to be disabled in the BIOS. Also Hibernation and Fast Startup need to be disabled in Windows 10. Windows does create an EFI partition upon installation, so you don't have to create on of your own. Then you can start the Arch installation process following the Installation Guide from the Wiki.
-
-
 
 # Installation Process
 

@@ -1,25 +1,23 @@
 # Things to do after a successfull Arch install
 
-Congratulations, you have successfully installed Arch Linux!
-After the you might wonder, what to do now.
-This guide provides some useful steps you might want to take after a clean Arch install.
-Please read all the steps before executing them, as you might not need all of them.
+This document is more of a collection of packages for me, always consult the Arch Wiki in case of uncertainty.
 
 ## Add a user
 
 After a plain Arch install there is only the root user. Since you don't want to be logged in as root all the time, we need to add another regular user.
 
-Edit the `sudoers`-file at `/etc/sudoers` with vim or nano.
+Edit the `sudoers`-file at `/etc/sudoers` with vim.
 
 ```sh
 sudo EDITOR=vim visudo
 ```
 
-Uncomment the line that says `%wheel ALL=(ALL) ALL`.
-Then, we add a new user called `simon` to the `wheel` group we just uncommented.The user gets his own `/home` directory.
+Uncomment the line that says `%wheel ALL=(ALL) ALL`.  
+There you can also disable the password prompt for sudo.  
+Then, we add a new user called `simon` to the `wheel` group we just uncommented.  
 
 ```sh
-useradd -m -G wheel -s /bin/sh simon
+useradd -m -G wheel -s /bin/zsh simon
 ```
 
 As a last step, the user needs a password:
@@ -32,36 +30,8 @@ Enter a password and confirm it.
 
 ## Install yay (AUR package manager)
 
-[Yay](https://github.com/Jguer/yay) is a package manager, that enables you to install and maintain packages from the AUR (Arch User Repository).
-First, install git:
-
-```sh
-sudo pacman -S git
-```
-
-Then, clone the git repository of yay:
-
-```sh
-git clone https://aur.archlinux.org/yay.git
-```
-
-Navigate into the yay directory:
-
-```sh
-cd yay
-```
-
-And install the Package
-
-```sh
-makepkg -si
-```
-
-You might want to remove the build dependency `Go` afterwards:
-
-```sh
-pacman -Rns go
-```
+[Yay](https://github.com/Jguer/yay) is a package manager, that enables you to install and maintain packages from the AUR.  
+Check the github repo for installation instructions.
 
 ## Install Nvidia drivers
 
@@ -97,12 +67,7 @@ sudo pacman -S pulseaudio alsa-utils pavucontrol pulseaudio-alsa
 
 This installs the pulseaudio sound server and the alsa mixer, a tool within the terminal to control different sound channels. It can also be controlled by pavucontrol. Restart the system after pulseaudio is installed.
 
-## Install a graphical user interface (GUI)
-
-A Graphical userinterface is a convenient way to interact with the computer, so you don't have to run everything in the terminal.
-There are several GUIs available for linux. We differentiate between display managers and desktop environments.
-In this case, we install the GNOME desktop environment. For other desktop environments, please consult the Arch Wiki.
-
+## Install a desktop environment
 ### Install display Server
 
 First, we need a display server:
@@ -110,8 +75,6 @@ First, we need a display server:
 ```sh
 pacman -S xorg-server xorg-xinit
 ```
-
-Alternatively, you can install wayland as a display server, but you might run into problems with some programs.
 
 ### Install display drivers
 
@@ -121,33 +84,32 @@ For optimal use of our system resources, a display driver is required.
 sudo pacman -S xorg-drivers
 ```
 
-### Install Awesome with lightdm
+### Install Awesome and related utilities
 
 ```sh
-sudo pacman -S lightdm lightdm-gtk-greeter awesome
-sudo systemctl enable lightdm.service
+sudo pacman -S awesome rofi slock alacritty
 ```
 
 ## Install some useful utilities
 
 ```sh
-sudo pacman -S unzip gvfs udisks2
+sudo pacman -S unzip gvfs udisks2 ack sed
 ```
 
-## Install useful programs
+### Install useful programs
 
 ```sh
 sudo pacman -S thunar moc
-yay -S qview #or nomacs
+yay -S qview
 
 sudo pacman -S darktable
 sudo pacman -S opencl-nvidia ocl-icd # OpenCL support for Darktable
+yay -S colorpicker brave-bin
 ```
 
-## Network utilities
+### Network utilities
 
 ```sh
 pacman -S dnsutils net-tools
 pacman -S wireshark-cli metasploit postgresql nmap
 ```
-
