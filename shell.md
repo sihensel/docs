@@ -7,7 +7,7 @@ Command | Action
 `!!` | executes the last issued command
 `!$` | use the last argument
 `history` | lists all the last issued commands
-`apropos` \<search phrase> | searches all programms for the specified search phrase
+`apropos <search phrase>` | searches all programms for the specified search phrase
 `<command> \| column -t -s :` | displays stdout in a table with the seperator `:`
 `nohup \<command>` | executes the command, even if the user logs out, stdout gets written to nohup.out
 `<command> \| grep -c '\<string>'` | counts how often the specified string appears

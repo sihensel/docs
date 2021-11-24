@@ -1,10 +1,7 @@
-
 # Vim
 
 To get all the information about vim, use `vimtutor`.
 This document lists all basic commands as a cheat sheet. For all commands, see `vimtutor`.
-
-
 
 ## Movement
 
@@ -34,8 +31,6 @@ fa | find the next a
 ; | repeat last find command
 F | reverse find command
 
-
-
 ## Tabs
 
 Command | Meaning
@@ -61,9 +56,7 @@ Command | Meaning
 :w Test	| save the file with the name `Test`
 :wq | save all changes and exit.
 
-
-
-## delete and insert
+## Delete and Insert
 
 Command | Meaning
 --- | ---
@@ -82,8 +75,6 @@ cw | change word
 c$ | change to the end of the line
 o | opens new line below the cursos and places you in insert mode
 O | opens a new line above the cursor
-
-
 
 ## Visual Mode
 
@@ -105,8 +96,6 @@ u | undo
 U | undo all changes to the line
 CTRL-R | redo
 
-
-
 ## Copy and paste
 
 `dd` saves the deleted line in a vim register, so you can paste them with `p`.
@@ -117,15 +106,11 @@ p | insert deleted lines under cursor
 y | copy selection (yank)
 yw | copies one word
 
-
-
 ## Cursor Location and File status
 
 Command | Meaning
 --- | ---
 CTRL-G | show your location in the file and filestatus
-
-
 
 ## Search
 
@@ -138,8 +123,6 @@ n | search for phrase again
 N | search for phrase again, but upwards
 ? | search for phrase in upwards direction
 CTRL-O | go back to where you came from
-
-
 
 ## External Commands
 

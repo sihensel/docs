@@ -1,11 +1,11 @@
 # Arch Linux installation guide
 
-Always refer to the [Arch Wiki](https://wiki.archlinux.org/index.php/installation_guide).  
-This document shows only a few key commands that might not be in the Arch Installation Guide. This is not complete.
+Always refer to the [Arch Install Guide](https://wiki.archlinux.org/index.php/installation_guide).  
+This document shows only a few key commands that might not directly be in the Installation Guide.
 
 ## Connect to the Internet
 
-Ensure your network interface is listed:
+Ensure your network interface is listed.
 
 ```sh
 ip link
@@ -13,27 +13,27 @@ ip link
 
 ### Connect via ethernet (recommended)
 
-DHCP for ethernet connections is enabled by default. So just plug in the ethernet cable.  
-If you are using a connection which requires a static IP you can add it with the `add` command. You need to state the IP adress and the netmask.
+DHCP for ethernet connections is enabled by default, so just plug in the ethernet cable.  
+If you require a static IP you need to state the IP adress and the netmask.
 
 ```sh
 ip address add 192.168.1.10/24 dev eth0
 ```
 
-Same applies to wireless interfaces (like wlan0)
+Same applies to wireless interfaces (like wlan0).
 
 ### Connect via WIFI
 
-If your wireless connection requires a static IP, follow the steps above, they are the same as for an ethernet connection.  
+If your wireless connection requires a static IP, follow the steps above.
 To scan and connect to a wireless network, use the `wifi-menu`-command and follow the on-screen instructions.  
-If this does not work, you need to connect to teh WIFI manually.  
+If this does not work, you need to connect to the WIFI manually.  
 First, list all wireless devices.
 
 ```sh
 iwctl device list
 ```
 
-We assume, your wifi interface is `wlan0`. If you have another interface, just exchange the name.  
+We assume, your wifi interface is `wlan0`.
 Scan for available wireless networks (this will not output anything).
 
 ```sh
@@ -60,10 +60,10 @@ dhcpd
 ```
 
 Afterwards, you should be connected to the internet, check this with a `ping`.  
-If you still have no connection, check the name resolve configuration.
+If you still have no connection, check the resolve configuration.
 
 ```sh
-cat /etc/resolv.conf
+vim /etc/resolv.conf
 ```
 
 Add the DNS server of your router or a public DNS server address.
@@ -73,16 +73,13 @@ nameserver 192.168.1.1
 nameserver 0.0.0.0
 ```
 
+# Install the Arch system
+
 ## Create and format the partitions
 
 If you use BIOS, one root partition is enough, if you use UEFI, don't forget to create an EFI-partition first.
 
-# Install the Arch system
-
 ## Select the mirrors
-
-Arch has a huge number of mirrors, but it might not prefet the fastest ones. If a slower mirror is chosen, the downloads of the system will take significantly longer.  
-First, sync the pacman repository.
 
 ```sh
 pacman -Syy
@@ -108,39 +105,37 @@ reflector -c 'Germany' -f 12 -l 10 -n 12 --save /etc/pacman.d/mirrorlist
 
 ## Install the base system
 
-Install the base system with `pacstrap`.
-
 ```sh
-pacstrap /mnt base base-devel linux linux-firmware vim man-db
+pacstrap /mnt base base-devel linux linux-firmware neovim man-db
 ```
 
 Replace `linux` with `linux-lts` if you want to use the LTS-kernel.  
 
-# Install additional packages
-
-After you finished installing and configuring your system, there are a few more useful steps to take.
+## Install additional packages and a bbootloader
 
 ```sh
-pacman -S networkmanager grub efibootmgr intel-ucode
+pacman -S networkmanager grub intel-ucode efibootmgr gvfs udisks2 os-prober dosfstools ntfs-3g 
 ```
 
 If you use BIOS instead of UEFI, you don't need the `efibootmgr` package.
+The last three packages are only relevant if you want to dual boot Windows.
 Replace `intel-ucode` with `amd-ucode` if you have an AMD processor.
 
-## Install GRUB - BIOS
+### Install GRUB - BIOS
 
-Install GRUB to the corresponding device (use the whole device, not a partition):
+Install GRUB to the corresponding device (use the whole device, not a partition).
 
 ```sh
 grub-install /dev/sda
 ```
 
-## Install GRUB - UEFI
+### Install GRUB - UEFI
 
 Create the directory, where you want to mount the EFI partition.
 
 ```sh
 mkdir /boot/efi
+mount /dev/sda1 /boot/efi  # only applies if there already is an EFI partition at /dev/sda1
 ```
 
 Now, mount your EFI partition.
@@ -152,16 +147,22 @@ mount /dev/sda1 /boot/efi/
 Then install grub like this:
 
 ```sh
-grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot/efi
+grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot/efi --recheck
 ```
 
-As the last step, write the GRUB config (applies to both BIOS and UEFI):
+### Install GRUB - Applies to both BIOS and UEFI
 
 ```sh
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
-Also, enable the NetworkManager-service.
+Edit the `/etc/default/grub` file.
+Set `DEFAULT_TIMEOUT=15` and `GRUB_CMDLINE_LINUX_DEFAULT="loglvel=3 quiet acpi_backlight=vendor"`.
+
+
+### Wrap up
+
+Also, enable the NetworkManager.service.
 
 ```sh
 systemctl enable NetworkManager.service
