@@ -113,3 +113,20 @@ yay -S colorpicker brave-bin
 pacman -S dnsutils net-tools
 pacman -S wireshark-cli metasploit postgresql nmap
 ```
+
+# Clean Arch Linux (WIP)
+
+## Pacman
+`pacman -Sc` removes the cache for uninstalled packages, alternatively, use a hook that executes after a pacman command  
+`pacman -Qdtq` lists all unused packages, uninstall with `pacman -Rnscd $(pacman -Qdtq)`  
+
+## Cache
+`du -sh ~/.cache` shows the size of the cache folder
+`rm -rf ~/.cache/*` deletes everything from that folder
+
+## Configs
+check for files and folders in `~/.config` and `~/.local/share` that are no longer needed
+
+## Clean Systemd journal
+set a limit for journald with `journalctl --vacuum-time=2weeks` or `journalctl --vacuum-size=50M` or delete the logs manually  
+to set a permanent limit, set `SystemMaxUse=100M` in `/etc/systemd/journald.conf`  
