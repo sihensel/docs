@@ -19,6 +19,7 @@ pacman -Qdtq | list unneeded dependencies
 pacman -Qs | search for local packages
 pacman -Sc | remove old packages from the cache
 yay -Yc | remove unneded packages (alternatively, use `sudo pacman -Rns $(pacman -Qtdq)`)
+yay -Syu --devel | upgrade all AUR packages
 
 
 Uncomment the line `Color` in `/etc/pacman.conf` to add colors to the pacman output.

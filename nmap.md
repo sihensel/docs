@@ -7,8 +7,6 @@ Also you are __NOT__ anonymous.
 
 Nmap has a dedicated [site](http://scanme.nmap.org/) to test some stuff.
 
-
-
 ## Look up IP addresses
 
 To see IP adresses grouped by country, use [nirsoft](https://www.nirsoft.net/countryip/).
