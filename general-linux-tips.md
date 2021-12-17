@@ -2,6 +2,16 @@
 
 This document contains several tips and trick when using Linux, which might make your life easier.
 
+## Mount drive on boot with fstab
+Run `lsblk -f` to see all available drives, their mount points and their `UUID`.  
+Then insert an entry in `/etc/fstab` like the one below. Leave `dump` at 0 and set `pass` to 0 or 2 (1 should be root).
+
+```sh
+# <file system> <dir> <type> <options> <dump> <pass>
+# /dev/sdb1
+UUID=E246711B4670F1A1	/home/simon/HDD         	ntfs      	rw,relatime	0 2
+```
+
 ## Keyboard settings
 
 ### Disable caps lock
