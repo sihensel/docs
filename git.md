@@ -37,6 +37,11 @@ git switch main | switches to the branch 'main'
 git push origin new_feature | pushes the local branch to remote
 git fetch origin new_feature | pulls down the branch 'new_feature' without merging it
 
+## Useful settings
+
+`git config --global core.editor nvim`
+`git config --global commit.verbose true`
+
 ## Set up SSH with Git
 
 ### Generate a keypair
