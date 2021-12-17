@@ -114,19 +114,32 @@ pacman -S dnsutils net-tools
 pacman -S wireshark-cli metasploit postgresql nmap
 ```
 
+### Phone support
+
+Enables file browser support for Android phones (reboot for changes to take effect).
+```sh
+pacman -S mtpfs gvfs-mtp
+yay -S jmtpfs
+```
+
 # Clean Arch Linux (WIP)
 
 ## Pacman
-`pacman -Sc` removes the cache for uninstalled packages, alternatively, use a hook that executes after a pacman command  
-`pacman -Qdtq` lists all unused packages, uninstall with `pacman -Rnscd $(pacman -Qdtq)`  
+Command | Action
+--- | ---
+`pacman -Sc` | removes the cache for uninstalled packages, alternatively use a [hook](https://github.com/sihensel/dotfiles/blob/main/clear_cache.hook)
+`pacman -Qdtq` | lists all unused packages
+`pacman -Rnscd $(pacman -Qdtq)` | removes all unused packages
 
 ## Cache
-`du -sh ~/.cache` shows the size of the cache folder
-`rm -rf ~/.cache/*` deletes everything from that folder
+Command | Action
+--- | ---
+`du -sh ~/.cache` | shows the size of the cache folder
+`rm -rf ~/.cache/*` | deletes everything from that folder
 
 ## Configs
 check for files and folders in `~/.config` and `~/.local/share` that are no longer needed
 
 ## Clean Systemd journal
-set a limit for journald with `journalctl --vacuum-time=2weeks` or `journalctl --vacuum-size=50M` or delete the logs manually  
+et a limit for journald with `journalctl --vacuum-time=2weeks` or `journalctl --vacuum-size=50M` or delete the logs manually  
 to set a permanent limit, set `SystemMaxUse=100M` in `/etc/systemd/journald.conf`  
