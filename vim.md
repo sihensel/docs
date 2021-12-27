@@ -1,7 +1,6 @@
 # Vim
 
-To get all the information about vim, use `vimtutor`.
-This document lists all basic commands as a cheat sheet. For all commands, see `vimtutor`.
+A collections of useful vim shortcurs.
 
 ## Movement
 
@@ -94,6 +93,13 @@ o | opens new line below the cursos and places you in insert mode
 O | opens a new line above the cursor
 s | substitute a character
 S | substitute the whole line
+ci" | change all words __inside__ double quotes (the cursor will jump to the __next__ occurence of " on the line)
+ca' | change all word __including__ the single quotes
+di{ | delete all words __inside__ curly brackets
+da{ | delete all words __including__ curly brackets
+vi( | select all text inside the parentheses
+=i{ | properly aligns all text inside curly brackets
+
 
 ## Visual Mode
 
@@ -172,6 +178,10 @@ gv | jump to the last selected text
 J | join lines
 gJ | join lines without spaces between the joined lines
 g& | apply the last substitution command to the whole file
+gd | goto local definition (e.g. of a function)
+gD | goto global definition (e.g. of a function)
+g* | search for the the word under the cursor (like *, but g* on 'rain' will also fine 'rainbow')
+g* | reverse search for the the word under the cursor
 
 ## :-Commands
 Command | Action
