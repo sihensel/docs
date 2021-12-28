@@ -73,3 +73,48 @@ git clone git@github.com:username/your-repository.git
 
 This way, ssh is enabled out of the box and you don't have to enter your password or change your repo any more.  
 Alternatively, Github Tokens can also be used for authentication.
+
+## Cleanup Git Repo
+If your repo contains a lot of deleted binary files (e.g. images, compiled objects, etc.), your `.git` directory can become quite big, since Git still keeps track of them. These objects can be cleaned from git with the help of [BFG](https://rtyley.github.io/bfg-repo-cleaner/). This short guide follows [this post](https://www.tikalk.com/posts/2017/04/19/delete-binaries-from-git-repository/).
+
+To find the biggest files in your repo, use the [git-tools](https://github.com/ivantikal/git-tools) scripts.
+This step is optional, but can provide good insights.
+
+```sh
+git clone https://github.com/ivantikal/git-tools.git
+```
+
+To get the 50 biggest files, run
+```sh
+./git-tools/clean-binaries/get_biggest_files_in_history.sh -r ./repo_with_binaries/ -n 50
+```
+
+This script will write the output to a `.txt` file.
+Afterwards, we can use `BFG` to clean our repo. To run this script, install the `jre-openjdk-headless` package (on Arch).  
+Download the file (either via the website or with `curl`)
+
+```sh
+curl -LO https://repo1.maven.org/maven2/com/madgag/bfg/1.14.0/bfg-1.14.0.jar
+```
+
+Clone your repo, using the `--mirror` prefix, which loads all refs from Github.
+
+```
+git clone --mirror git@github.com:user/repo.github
+```
+
+This will create a directory with the string `.git` at the end. This is our target for `BFG`.
+To delete all refs for files bigger that 50 MB, run
+
+```sh
+java -jar bfg-1.14.0.jar --strip-blobs-bigger-than 50M your_repo.git
+```
+
+Now that Git realizes that it keeps track of unnecessary files, run
+```sh
+cd your_repo.git
+git reflog expire --expire=now --all && git gc --prune=now --aggressive
+```
+
+As a last step, perform a `git push` to update the remote repo.
+Make sure to delete all old local copies of the repo and a do fresh clone, to avoid reintroducing old binaries into the git history.
