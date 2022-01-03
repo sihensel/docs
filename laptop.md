@@ -8,6 +8,12 @@ If Windows is already installed, leave it that way. You just need to partition t
 Secure Boot needs to be disabled in the BIOS. Also Hibernation and Fast Startup need to be disabled in Windows 10.  
 Windows does create an EFI partition upon installation, so you don't have to create on of your own.
 
+## Useful drivers and other packages
+Use the current kernel to make use of the latets WIFI drivers.
+Install `sof-firmware` and `alsa-ucm-conf` sound driver packages and unmute all channels.
+
+To use openvpn and the networkmanager-applet, install the `openvpn`, `nm-applet`, `nm-connection-editor` and `networkmanager-openvpn` packages.
+
 ## Manage battery and performance
 
 Install the `tlp` and `auto-cpufreq` (AUR) packages and enable their services.
