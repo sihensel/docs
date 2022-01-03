@@ -114,6 +114,11 @@ pacman -S dnsutils net-tools
 pacman -S wireshark-cli metasploit postgresql nmap
 ```
 
+#### Use dnsmasq with NetworkManager
+
+Install `dnsmasq` and configure `NetworkManager` to use it as a dns service (see the [Arch Wiki](https://wiki.archlinux.org/title/NetworkManager#dnsmasq)).  
+Put your config into `/etc/NetworkManager/dnsmasq.d/` and restart the service.
+
 ### Phone support
 
 Enables file browser support for Android phones (reboot for changes to take effect).
@@ -122,7 +127,7 @@ pacman -S mtpfs gvfs-mtp
 yay -S jmtpfs
 ```
 
-# Clean Arch Linux (WIP)
+# Clean Arch Linux
 
 ## Pacman
 Command | Action
@@ -138,8 +143,8 @@ Command | Action
 `rm -rf ~/.cache/*` | deletes everything from that folder
 
 ## Configs
-check for files and folders in `~/.config` and `~/.local/share` that are no longer needed
+Check for files and folders in `~/.config` and `~/.local/share` that are no longer needed.
 
 ## Clean Systemd journal
-et a limit for journald with `journalctl --vacuum-time=2weeks` or `journalctl --vacuum-size=50M` or delete the logs manually  
-to set a permanent limit, set `SystemMaxUse=100M` in `/etc/systemd/journald.conf`  
+Set a limit for `journald` with `journalctl --vacuum-time=2weeks` or `journalctl --vacuum-size=50M` or delete the logs manually.  
+To set a permanent limit, set `SystemMaxUse=100M` in `/etc/systemd/journald.conf`.
