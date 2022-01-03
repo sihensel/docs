@@ -51,3 +51,26 @@ Command | Action
 `command1 && command2` | run command2 only if command1 succeeds
 `command1 || command2` | run command2 only if command1 fails
 `yes \| command` | confirmes every action in a command or script
+
+### Login shells
+
+The `nologin` shell promts the user on login that the account is not available.  
+`/bin/false` returns false (-1) and exits.  
+`/bin/true` returns true (0) and exits.  
+All three can be set as login shells, only nologin has the prompt.
+
+### Writing to /dev/null
+If the output of a command is not needed, it can be redirected to the null device `/dev/null`. This gets rid of all verbose output.  
+`ping -c 3 archlinux.org >/dev/null`  
+The command runs, displays no output and then exits. This is particularly useful in shell scripts, when the output of a command is not needed.
+
+The streams `STDOUT` and `STDERR` can both be sent to `/dev/null`.  
+
+```sh
+command > /dev/null 2> /dev/null    # these are all the same
+command 1> /dev/null 2> /dev/null
+command > /dev/null 2>&1            # this is what's most seen
+```
+
+`/dev/null` can also be used for `STDIN` (0) if blank input is needed:
+`command < /dev/null`
