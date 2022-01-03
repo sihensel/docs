@@ -77,7 +77,44 @@ nameserver 0.0.0.0
 
 ## Create and format the partitions
 
-If you use BIOS, one root partition is enough, if you use UEFI, don't forget to create an EFI-partition first.
+If you use BIOS, one root partition is enough, if you use UEFI, don't forget to create an EFI-partition first. If you want to encrypt your disk, read on before creating any partitions.
+
+### Encrypting the root partition
+Create all partitions but don't create any filesystems yet, as we need to encrypt the root partition first.  
+Load the cryptsetup kernel modules:
+
+```sh
+modprobe dm-crypt
+modprobe md-mod
+```
+
+Create 3 partitions: UEFI, boot and root (which will be encrypted) with `fdisk`.  
+There should be three partitions:
+- `/dev/sda1` - efi, 256 MB
+- `/dev/sda2` - boot, 512 MB
+- `/dev/sda3` - root, Rest of disk
+
+Now we encrypt the `root` partition.
+
+```sh
+cryptsetup luksFormat -v -s 512 -h sha512 /dev/sda3
+cryptsetup open /dev/sda3 luks_root
+```
+
+`luks_root` will be the name used to access the partition. Afterwards, the partition will be available at `/dev/mapper/luks_root`.  
+Now, create a filesystem with `mkfs.ext4 /dev/mapper/luks_root`.
+Also create filesystems for the other 2 partitions.
+- `/dev/sda1` - efi, vfat
+- `/dev/sda2` - boot, ext4
+
+Finally, mount all partitions:
+```sh
+mount /dev/mapper/luks_root /mnt
+mkdir /mnt/boot
+mount /dev/sda2 /mnt/boot
+mkdir /mnt/boot/efi
+mount /dev/sda1 /mnt/boot/efi
+```
 
 ## Select the mirrors
 
@@ -111,61 +148,52 @@ pacstrap /mnt base base-devel linux linux-firmware neovim man-db
 
 Replace `linux` with `linux-lts` if you want to use the LTS-kernel.  
 
-## Install additional packages and a bbootloader
+## Install additional packages and a bootloader
 
 ```sh
-pacman -S networkmanager grub intel-ucode efibootmgr gvfs udisks2 os-prober dosfstools ntfs-3g 
+pacman -S networkmanager grub intel-ucode efibootmgr gvfs udisks2 os-prober dosfstools ntfs-3g
+systemctl enable NetworkManager.service
 ```
 
-If you use BIOS instead of UEFI, you don't need the `efibootmgr` package.
-The last three packages are only relevant if you want to dual boot Windows.
-Replace `intel-ucode` with `amd-ucode` if you have an AMD processor.
+If you use BIOS instead of UEFI, you don't need the `efibootmgr` package. The last three packages are only relevant if you want to dual boot Windows. Replace `intel-ucode` with `amd-ucode` if you have an AMD processor.
 
-### Install GRUB - BIOS
+### Prepare Grub for LUKS
 
-Install GRUB to the corresponding device (use the whole device, not a partition).
+This only applies when the root partition is encrypted with LUKS.  
+Before installing grub, add the following to `/etc/default/grub`
+```sh
+GRUB_CMDLINE_LINUX=”cryptdevice=/dev/sda3:luks_root”
+GRUB_ENABLE_CRYPTODISK=y
+```
+
+Then, add the `encrypt`-keyword to the following line in `/etc/mkinitcpio.conf`
 
 ```sh
-grub-install /dev/sda
+HOOKS=(base udev autodetect modconf block encrypt filesystems keyboard fsck)
 ```
+
+Afterwards, run `mkinitcpio -p linux`. Now you can install GRUB.
 
 ### Install GRUB - UEFI
 
-Create the directory, where you want to mount the EFI partition.
+Create the directory where you want to mount the EFI partition.
 
 ```sh
 mkdir /boot/efi
-mount /dev/sda1 /boot/efi  # only applies if there already is an EFI partition at /dev/sda1
-```
-
-Now, mount your EFI partition.
-
-```sh
-mount /dev/sda1 /boot/efi/
+mount /dev/sda1 /boot/efi
 ```
 
 Then install grub like this:
 
 ```sh
 grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot/efi --recheck
-```
-
-### Install GRUB - Applies to both BIOS and UEFI
-
-```sh
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
 Edit the `/etc/default/grub` file.
-Set `DEFAULT_TIMEOUT=15` and `GRUB_CMDLINE_LINUX_DEFAULT="loglvel=3 quiet acpi_backlight=vendor"`.
-
-
-### Wrap up
-
-Also, enable the NetworkManager.service.
 
 ```sh
-systemctl enable NetworkManager.service
+DEFAULT_TIMEOUT=15
+GRUB_CMDLINE_LINUX_DEFAULT="loglvel=3 quiet acpi_backlight=vendor"
 ```
-
-Now you can exit `chroot`, unmount your partitions and reboot.
+Finish the installation, exit `chroot`, unmount your partitions and reboot.
