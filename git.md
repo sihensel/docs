@@ -11,7 +11,7 @@ Command | Action
 `git add -u` | adds all _modified_ files to the local git repo
 `git commit -m "Commit Message"` | Commit the changes
 `git push` | pushes the commits from the local repo to the remote repo
-`git push -u` | push the local branch and set it as upsteam
+`git push -u` | push the local branch and set it as upstream
 `git pull` | pull all changes from the remote repo to the local repo
 `git pull --rebase origin master` | rebases the local branch to the remote master
 `git rebase -i HEAD~3` | start interactive rebase for the last 3 commits
@@ -33,7 +33,8 @@ Command | Action
 --- | ---
 `git switch -c new_feature` | Creates a branch called 'new_feature' and switches to it
 `git branch` | shows the current branch
-`git switch main` | switches to the branch 'main'
+`git branch -a` | shows the local list of all known branches (run `git fetch` before)
+`git remote update origin --prune` | update the local list of remote branches
 `git push origin new_feature` | pushes the local branch to remote
 `git fetch origin new_feature` | pulls down the branch 'new_feature' without merging it
 
