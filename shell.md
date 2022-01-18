@@ -6,6 +6,7 @@ Command | Action
 --- | ---
 `!!` | executes the last issued command
 `!$` | use the last argument
+`$?` | get the exit code of the last command
 `history` | lists all the last issued commands
 `apropos <search phrase>` | searches all programms for the specified search phrase
 `<command> \| column -t -s :` | displays stdout in a table with the seperator `:`
@@ -17,6 +18,17 @@ Command | Action
 `du -sh` | show disk usage, summarized and human readable
 `tar -xvzf <your file>` | extracts a .tar archive
 `export PATH=$PATH:path/to/dir` | add a directory to the PATH
+`expand; unexpand` | convert tabs to spaces and vice versa
+`join; split` | merge or split files
+`sort` | sort the content of a file
+`uniq` | removes all duplicate lines from a file
+`grep -i` | ignore cases
+`ps aux` | show all processes, including those without a tty
+`kill -9 <PID>` | kill a process with signal 9
+`jobs` | list all background processes that have been started with `&`
+`fg %1` | bring the first background to to the foreground
+`umask` | adjust default file permissions on new files
+
 
 ### Network/SSH
 
@@ -74,3 +86,19 @@ command > /dev/null 2>&1            # this is what's most seen
 
 `/dev/null` can also be used for `STDIN` (0) if blank input is needed:
 `command < /dev/null`
+
+### File Permissions
+
+The `s` bit states that the program always runs as root, even without sudo privileges (e.g. `/usr/bin/passwd`). SUID has the numerical value 4 (4755).
+A `S` bit indicates a SUID bit without execute permissions.  
+This also works for groups, where a program runs as another group (e.g. `/usr/bin/wall`). SGID has the numerical value 2 (2555).  
+The sticky bit `t` means that anyone can write into a file or directory, but only root can delete it, such as `/tmp`. The sticky bit has the numerical value 1.
+
+### Device types
+
+Type | Explanation
+--- | ---
+b | block (transfer data in fixed blocks)
+c | character (transfer data one character at a time)
+p | pipe (allow transfer of data between processes)
+s | socket (communication between multiple processes)
