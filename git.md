@@ -26,8 +26,9 @@ Command | Action
 Set up a new local branch with `git switch -c branchName`. This will automatically switch to the new branch.  
 To verify your current branch, use `git branch`, to switch use `git switch branchName`.  
 Make your changes and commit them as usual. Push your commits with `git push origin branchName`.  
-The branch can now be merged via pull request on Github and the branch can be deleted with `git branch -d`.
-To pull down a branch from Github, use `git fetch origin branchName`.
+To pull down a branch from Github, use `git fetch origin branchName`.  
+To delete a branch, use `git branch -d branchName` for local and `git push origin --delete branchName` for remote.  
+`git branch -r` lists all remote branches.
 
 Command | Action
 --- | ---
