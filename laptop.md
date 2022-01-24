@@ -23,6 +23,15 @@ systemctl enable tlp.service
 systemctl enable auto-cpufreq.service
 ```
 
+Check the wireless device status with `rfkill list`. Specific devices can be controlled with their [respective command](https://linrunner.de/tlp/usage/radio.html).
+
+```sh
+bluetooth [ on | off | toggle ]
+nfc [ on | off | toggle ]
+wifi [ on | off | toggle ]
+wwan [ on | off | toggle ]
+```
+
 ## Screen lock on lid close
 
 To lock the device to sleep before it goes to sleep, create the file `/etc/systemd/system/lock.service`.
