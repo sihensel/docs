@@ -16,8 +16,6 @@ Command | Action
 `ln <file> <link_name>` | creates a hardlink to the file
 `ln -s <file> <link_name>` | creates a softlink to the file
 `du -sh` | show disk usage, summarized and human readable
-`tar -xvzf <your file>` | extracts a .tar archive
-`export PATH=$PATH:path/to/dir` | add a directory to the PATH
 `expand; unexpand` | convert tabs to spaces and vice versa
 `join; split` | merge or split files
 `sort` | sort the content of a file
@@ -26,8 +24,14 @@ Command | Action
 `ps aux` | show all processes, including those without a tty
 `kill -9 <PID>` | kill a process with signal 9
 `jobs` | list all background processes that have been started with `&`
-`fg %1` | bring the first background to to the foreground
+`fg %1` | bring the first background to to the foreground, works the same with `bg`
 `umask` | adjust default file permissions on new files
+`cal` | display a simple calendar
+`uptime` | get system uptime
+`cat /proc/cpuinfo` | get CPU info
+`cat /proc/meminfo` | get memory info
+`which <program>` | show which program will be run
+`whereis <program>` | show possible file locations for a program
 
 
 ### Network/SSH
@@ -102,3 +106,25 @@ b | block (transfer data in fixed blocks)
 c | character (transfer data one character at a time)
 p | pipe (allow transfer of data between processes)
 s | socket (communication between multiple processes)
+
+### File Compression
+
+Flag | Description
+--- | ---
+c | create archive
+t | show archive contents
+x | extract
+f | specify filename
+z | use zip/gzip
+k | do not overwrite
+w | ask for confirmation
+v | verbose
+
+```sh
+tar cf file.tar files   # create archive from files
+tar tf file.tar         # show contents of archive
+tar xvf file.tar        # untar in cwd
+
+gzip file               # compress file and rename to file.gz
+gzip -d file.gz         # decompress file.gz
+```
