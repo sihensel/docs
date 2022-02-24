@@ -1,4 +1,5 @@
 # Git
+
 A collection of Git commands and features that can be used as a quick reference.
 
 ## Git Commands
@@ -7,54 +8,65 @@ Command | Action
 --- | ---
 `git clone https://github.com/user/repo.git` | clones the repo using https
 `git clone git@github.com:user/repo.git` | clones the repo using ssh
-`git add` | adds all the specified files to the local git repo
 `git add -u` | adds all _modified_ files to the local git repo
 `git commit -m "Commit Message"` | Commit the changes
-`git push` | pushes the commits from the local repo to the remote repo
 `git push -u` | push the local branch and set it as upstream
-`git pull` | pull all changes from the remote repo to the local repo
 `git pull --rebase origin master` | rebases the local branch to the remote master
 `git rebase -i HEAD~3` | start interactive rebase for the last 3 commits
-`git rebase -i <commit hash>` | start interactive rebase starting __after__ the stated commit
+`git rebase -i <commit_hash>` | start interactive rebase starting __after__ the stated commit
 `git log` | show the Git log and who made which commits
 `git diff` | show all unstaged changes
-`git remote -v` | shows all remote connections with their respective URL
-`git remote add <name> <URL>` | adds a remote URL with \<name> to the branch
 
-## Working with Branches
-
-Set up a new local branch with `git switch -c branchName`. This will automatically switch to the new branch.  
-To verify your current branch, use `git branch`, to switch use `git switch branchName`.  
-Make your changes and commit them as usual. Push your commits with `git push origin branchName`.  
-To pull down a branch from Github, use `git fetch origin branchName`.  
-To delete a branch, use `git branch -d branchName` for local and `git push origin --delete branchName` for remote.  
-`git branch -r` lists all remote branches.
+## Branches
 
 Command | Action
 --- | ---
-`git switch -c new_feature` | Creates a branch called 'new_feature' and switches to it
-`git branch` | shows the current branch
+`git switch -c branchName` | Create a new branch and switch to it
+`git push -u origin branchName` | Push the new branch to remote and set it as upstream
+`git fetch origin branchName` | Fetch a branch to local without merging/rebasing it
+`git branch -d branchName` | Delete a local branch (use `-D` to force delete)
+`git push origin --delete branchName` | Delete a branch on remote
+`git branch -r` | list all remote branches.
 `git branch -a` | shows the local list of all known branches (run `git fetch` before)
 `git remote update origin --prune` | update the local list of remote branches
-`git push origin new_feature` | pushes the local branch to remote
-`git fetch origin new_feature` | pulls down the branch 'new_feature' without merging it
+
+### Forks
+
+Command | Action
+--- | ----
+`git remote -v` | shows all remote connections with their respective URL
+`git remote add <name> <URL>` | adds a remote URL with \<name> (e.g. `upstream`) to the branch
+`git fetch upstream` | fetch upstream remote changes into your fork
+`git rebase upstream/main` | rebase you branch to upstream/main
 
 ## Amending commits
+
 Sometimes it is necessary to edit a commit, either beacuse the message is incomplete or the author is incorrect.  
 `git commit --amend` lets you edit the last commit message (this also works while rebasing).  
 `git commit --amend --author="Author Name <email@address.com>" --no-edit` changes the author of the last commit message.  
 It is also possible to `squash` or `fixup` commits with a rebase.
 
+### Fixup old commit
+
+It is possible to fixup a specific commit using its commit ID/Hash.
+```sh
+git add <FILE>                              # Stage the fix
+git commit --fixup=<COMMIT_ID>              # Commit a fix for a specific commit
+git rebase -i --autosquash <COMMIT_ID>~1    # rebase the fixup
+```
+
 ## Useful settings
 
-`git config --global core.editor nvim`  
-`git config --global commit.verbose true`
+```
+git config --global core.editor nvim
+git config --global commit.verbose true
+```
 
 ## Set up SSH with Git
 
 ### Generate a keypair
-Generate the the ssh keypair (if you don't already have one).
 
+Generate the the ssh keypair (if you don't already have one).
 ```sh
 ssh-keygen -t rsa -b 4096
 ```
@@ -62,8 +74,8 @@ ssh-keygen -t rsa -b 4096
 Copy your public key (`~/.ssh/id_rsa.pub`) to Github.
 
 ### Workign with repos
-Change your directory to a local repo and run:
 
+Change your directory to a local repo and run:
 ```sh
 git remote set-url origin git@github.com:username/your-repository.git
 ```
@@ -74,9 +86,9 @@ git clone git@github.com:username/your-repository.git
 ```
 
 This way, ssh is enabled out of the box and you don't have to enter your password or change your repo any more.  
-Alternatively, Github Tokens can also be used for authentication.
 
 ## Cleanup Git Repo
+
 If your repo contains a lot of deleted binary files (e.g. images, compiled objects, etc.), your `.git` directory can become quite big, since Git still keeps track of them. These objects can be cleaned from git with the help of [BFG](https://rtyley.github.io/bfg-repo-cleaner/). This short guide follows [this post](https://www.tikalk.com/posts/2017/04/19/delete-binaries-from-git-repository/).
 
 To find the biggest files in your repo, use the [git-tools](https://github.com/ivantikal/git-tools) scripts.
@@ -87,6 +99,7 @@ git clone https://github.com/ivantikal/git-tools.git
 ```
 
 To get the 50 biggest files, run
+
 ```sh
 ./git-tools/clean-binaries/get_biggest_files_in_history.sh -r ./repo_with_binaries/ -n 50
 ```
@@ -113,6 +126,7 @@ java -jar bfg-1.14.0.jar --strip-blobs-bigger-than 50M your_repo.git
 ```
 
 Now that Git realizes that it keeps track of unnecessary files, run
+
 ```sh
 cd your_repo.git
 git reflog expire --expire=now --all && git gc --prune=now --aggressive
