@@ -14,6 +14,7 @@ Command | Action
 `git pull --rebase origin master` | rebases the local branch to the remote master
 `git rebase -i HEAD~3` | start interactive rebase for the last 3 commits
 `git rebase -i <commit_hash>` | start interactive rebase starting __after__ the stated commit
+`git rebase --onto main <branch>` | rebase a branch onto main
 `git log` | show the Git log and who made which commits
 `git diff` | show all unstaged changes
 
@@ -39,7 +40,7 @@ Command | Action
 `git fetch upstream` | fetch upstream remote changes into your fork
 `git rebase upstream/main` | rebase you branch to upstream/main
 
-## Amending commits
+### Amending commits
 
 Sometimes it is necessary to edit a commit, either beacuse the message is incomplete or the author is incorrect.  
 `git commit --amend` lets you edit the last commit message (this also works while rebasing).  
@@ -55,11 +56,31 @@ git commit --fixup=<COMMIT_ID>              # Commit a fix for a specific commit
 git rebase -i --autosquash <COMMIT_ID>~1    # rebase the fixup
 ```
 
-## Useful settings
+### Undo a rebase
 
+Check `git reflog` and search for the commit before the rebase and reset the branch to it. Suppose the old commit was `HEAD@{2}`:
+```sh
+git reset --hard HEAD@{2}
 ```
-git config --global core.editor nvim
-git config --global commit.verbose true
+
+## .gitconfig
+
+```ini
+[user]
+    email = user@example.com
+    name = Peter Griffin
+[commit]
+    verbose = true
+[core]
+    editor = nvim
+[fetch]
+    prune = true
+[log]
+    decorate = short
+[status]
+    showStash = true
+[http]
+    postBuffer = 157286400
 ```
 
 ## Set up SSH with Git
@@ -73,7 +94,7 @@ ssh-keygen -t rsa -b 4096
 
 Copy your public key (`~/.ssh/id_rsa.pub`) to Github.
 
-### Workign with repos
+### Working with repos
 
 Change your directory to a local repo and run:
 ```sh
@@ -84,8 +105,6 @@ Or clone a new repo with:
 ```sh
 git clone git@github.com:username/your-repository.git
 ```
-
-This way, ssh is enabled out of the box and you don't have to enter your password or change your repo any more.  
 
 ## Cleanup Git Repo
 
