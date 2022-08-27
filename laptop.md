@@ -4,7 +4,8 @@ This guide describes how to install Arch Linux on a Laptop and how to enable mos
 
 ## Before the Installation
 
-If Windows is already installed, leave it that way. You just need to partition to disk accordingly to your needs. Shrink the Windows partition and create new partitions using `fdisk`.  
+If Windows is already installed, leave it that way. You just need to partition to disk accordingly to your needs. Shrink the Windows partition and create new partitions using `fdisk`.
+
 Secure Boot needs to be disabled in the BIOS. Also Hibernation and Fast Startup need to be disabled in Windows 10.  
 Windows does create an EFI partition upon installation, so you don't have to create on of your own.
 
@@ -12,7 +13,7 @@ Windows does create an EFI partition upon installation, so you don't have to cre
 Use the current kernel to make use of the latets WIFI drivers.
 Install `sof-firmware` and `alsa-ucm-conf` sound driver packages and unmute all channels.
 
-To use openvpn and the networkmanager-applet, install the `openvpn`, `nm-applet`, `nm-connection-editor` and `networkmanager-openvpn` packages.
+To use openvpn and the networkmanager-applet, install the `openvpn`, `network-manager-applet`, `nm-connection-editor` and `networkmanager-openvpn` packages.
 
 ## Manage battery and performance
 
@@ -50,7 +51,7 @@ WantedBy=suspend.target sleep.target hibernate.target hybrid-sleep.target suspen
 ```
 Then enable `systemctl enable lock.service.`
 
-## Touchpad configuration
+## Touchpad configuration for Xorg
 
 Create a file at `/etc/X11/xorg.conf.d/70-synaptics.conf`.
 
@@ -78,7 +79,7 @@ EndSection
 
 Copy the Python script from the [Arch Wiki](https://wiki.archlinux.org/title/Keyboard_backlight) and add the file to the path.
 
-## Remap keys
+## Remap keys on Xorg
 
 Install the `xorg-xkeymaps` package.
 Export the default keymap to a file:
