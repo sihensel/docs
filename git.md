@@ -17,6 +17,7 @@ Command | Action
 `git rebase --onto main <branch>` | rebase a branch onto main
 `git log` | show the Git log and who made which commits
 `git diff` | show all unstaged changes
+`git update-index --assume-unchanged <file>` | tell git to ignore any changes to a file
 
 ## Branches
 
@@ -42,9 +43,9 @@ Command | Action
 
 ### Amending commits
 
-Sometimes it is necessary to edit a commit, either beacuse the message is incomplete or the author is incorrect.  
-`git commit --amend` lets you edit the last commit message (this also works while rebasing).  
-`git commit --amend --author="Author Name <email@address.com>" --no-edit` changes the author of the last commit message.  
+Sometimes it is necessary to edit a commit, either beacuse the message is incomplete or the author is incorrect.</br>
+`git commit --amend` lets you edit the last commit message (this also works while rebasing).</br>
+`git commit --amend --author="Author Name <email@address.com>" --no-edit` changes the author of the last commit message.</br>
 It is also possible to `squash` or `fixup` commits with a rebase.
 
 ### Fixup old commit
@@ -65,6 +66,8 @@ git reset --hard HEAD@{2}
 
 ## .gitconfig
 
+Use `git ignored` to list all files marked with `--assume-unchanged`.
+
 ```ini
 [user]
     email = user@example.com
@@ -81,6 +84,8 @@ git reset --hard HEAD@{2}
     showStash = true
 [http]
     postBuffer = 157286400
+[alias]
+    ignored = !git ls-files -v | grep "^[[:lower:]]"
 ```
 
 ## Set up SSH with Git
@@ -124,7 +129,7 @@ To get the 50 biggest files, run
 ```
 
 This script will write the output to a `.txt` file.
-Afterwards, we can use `BFG` to clean our repo. To run this script, install the `jre-openjdk-headless` package (on Arch).  
+Afterwards, we can use `BFG` to clean our repo. To run this script, install the `jre-openjdk-headless` package (on Arch).</br>
 Download the file (either via the website or with `curl`)
 
 ```sh
