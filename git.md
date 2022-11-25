@@ -64,6 +64,24 @@ Check `git reflog` and search for the commit before the rebase and reset the bra
 git reset --hard HEAD@{2}
 ```
 
+### Move commits to a new branch
+
+Can be useful when you forgot to create a new branch before making changes.<br>
+Make sure you stay on your current branch, e.g. `main` before doing this.
+```sh
+git branch newbranch        # create the new branch
+git reset --keep HEAD~2     # move the current branch back 2 commits
+git switch newbranch        # switch to the new branch
+```
+
+If your feature branch already exists, the steps are a bit different.
+```sh
+git switch existingbranch   # switch to your existing feature branch
+git merge main              # add the new commits to the existing branch
+git switch main             # switch to main
+git reset --keep HEAD~2     # move main back 2 commits
+```
+
 ## .gitconfig
 
 Use `git ignored` to list all files marked with `--assume-unchanged`.
