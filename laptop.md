@@ -6,7 +6,7 @@ This guide describes how to install Arch Linux on a Laptop and how to enable mos
 
 If Windows is already installed, leave it that way. You just need to partition to disk accordingly to your needs. Shrink the Windows partition and create new partitions using `fdisk`.
 
-Secure Boot needs to be disabled in the BIOS. Also Hibernation and Fast Startup need to be disabled in Windows 10.  
+Secure Boot needs to be disabled in the BIOS. Also Hibernation and Fast Startup need to be disabled in Windows 10.<br>
 Windows does create an EFI partition upon installation, so you don't have to create on of your own.
 
 ## Useful drivers and other packages

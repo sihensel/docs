@@ -1,7 +1,26 @@
 # Arch Linux installation guide
 
-Always refer to the [Arch Install Guide](https://wiki.archlinux.org/index.php/installation_guide).  
+Always refer to the [Arch Install Guide](https://wiki.archlinux.org/index.php/installation_guide).<br>
 This document shows only a few key commands that might not directly be in the Installation Guide.
+
+## Create a Bootable USB
+
+**Important**: Always specify the **full** disk, **not** the partition!
+
+### Linux as a target system
+
+```sh
+sudo cp archlinux-2023.01.01-x86_64.iso /dev/sda
+```
+
+### Windows as a target system
+
+Install the `woeusb-ng` package from the AUR.<br>
+This command runs a while, do not iterrupt it, even if it appears to be stuck.
+
+```sh
+sudo woeusb -v -d win_10_ltsc_2021.iso /dev/sdb
+```
 
 ## Connect to the Internet
 
@@ -13,7 +32,7 @@ ip link
 
 ### Connect via ethernet (recommended)
 
-DHCP for ethernet connections is enabled by default, so just plug in the ethernet cable.  
+DHCP for ethernet connections is enabled by default, so just plug in the ethernet cable.<br>
 If you require a static IP you need to state the IP adress and the netmask.
 
 ```sh
@@ -25,8 +44,8 @@ Same applies to wireless interfaces (like wlan0).
 ### Connect via WIFI
 
 If your wireless connection requires a static IP, follow the steps above.
-To scan and connect to a wireless network, use the `wifi-menu`-command and follow the on-screen instructions.  
-If this does not work, you need to connect to the WIFI manually.  
+To scan and connect to a wireless network, use the `wifi-menu`-command and follow the on-screen instructions.<br>
+If this does not work, you need to connect to the WIFI manually.<br>
 First, list all wireless devices.
 
 ```sh
@@ -59,7 +78,7 @@ For dynamic IPs, run the DHCP daemon:
 dhcpd
 ```
 
-Afterwards, you should be connected to the internet, check this with a `ping`.  
+Afterwards, you should be connected to the internet, check this with a `ping`. <br>
 If you still have no connection, check the resolve configuration.
 
 ```sh
@@ -70,17 +89,18 @@ Add the DNS server of your router or a public DNS server address.
 
 ```sh
 nameserver 192.168.1.1
-nameserver 0.0.0.0
+nameserver 1.1.1.1
 ```
 
 # Install the Arch system
 
 ## Create and format the partitions
 
-If you use BIOS, one root partition is enough, if you use UEFI, don't forget to create an EFI-partition first. If you want to encrypt your disk, read on before creating any partitions.
+If you use BIOS, one root partition is enough, if you use UEFI, don't forget to create an EFI-partition first.
+If you want to encrypt your disk, read on before creating any partitions.<br>
 
 ### Encrypting the root partition
-Create all partitions but don't create any filesystems yet, as we need to encrypt the root partition first.  
+Create all partitions but don't create any filesystems yet, as we need to encrypt the root partition first.<br>
 Load the cryptsetup kernel modules:
 
 ```sh
@@ -88,7 +108,7 @@ modprobe dm-crypt
 modprobe md-mod
 ```
 
-Create 3 partitions: UEFI, boot and root (which will be encrypted) with `fdisk`.  
+Create 3 partitions: UEFI, boot and root (which will be encrypted) with `fdisk`.<rbr>
 There should be three partitions:
 - `/dev/sda1` - efi, 256 MB
 - `/dev/sda2` - boot, 512 MB
@@ -101,13 +121,13 @@ cryptsetup luksFormat -v -s 512 -h sha512 /dev/sda3
 cryptsetup open /dev/sda3 luks_root
 ```
 
-`luks_root` will be the name used to access the partition. Afterwards, the partition will be available at `/dev/mapper/luks_root`.  
+`luks_root` will be the name used to access the partition. Afterwards, the partition will be available at `/dev/mapper/luks_root`.<br>
 Now, create a filesystem with `mkfs.ext4 /dev/mapper/luks_root`.
 Also create filesystems for the other 2 partitions.
 - `/dev/sda1` - efi, vfat
 - `/dev/sda2` - boot, ext4
 
-Finally, mount all partitions:
+Finally, mount all partitions.
 ```sh
 mount /dev/mapper/luks_root /mnt
 mkdir /mnt/boot
@@ -116,39 +136,22 @@ mkdir /mnt/boot/efi
 mount /dev/sda1 /mnt/boot/efi
 ```
 
-## Select the mirrors
-
+When not using disk encryption, only mount the root and efi partitions _outside_ of chroot.
 ```sh
-pacman -Syy
-```
-
-Then install `reflector`.
-
-```sh
-pacman -S reflector
-```
-
-Make a backup of the mirrorlist (just in case).
-
-```sh
-cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.old
-```
-
-Now, we will add the ten fastest mirrors of our country to the mirror list. Replace `Germany` with your country. You might want to look up the country codes in the Arch Wiki.
-
-```sh
-reflector -c 'Germany' -f 12 -l 10 -n 12 --save /etc/pacman.d/mirrorlist
+mkdir -p /mnt/boot/efi
+mount /dev/sda1 /mnt/boot/efi
+mount /dev/sda2 /mnt
 ```
 
 ## Install the base system
 
 ```sh
-pacstrap /mnt base base-devel linux linux-firmware neovim man-db
+pacstrap /mnt base base-devel linux linux-firmware linux-headers neovim man-db man-pages
 ```
 
-Replace `linux` with `linux-lts` if you want to use the LTS-kernel.  
+Replace `linux` with `linux-lts` if you want to use the LTS-kernel.
 
-## Install additional packages and a bootloader
+### Install additional packages and a bootloader
 
 ```sh
 pacman -S networkmanager grub intel-ucode efibootmgr gvfs udisks2 os-prober dosfstools ntfs-3g
@@ -159,14 +162,14 @@ If you use BIOS instead of UEFI, you don't need the `efibootmgr` package. The la
 
 ### Prepare Grub for LUKS
 
-This only applies when the root partition is encrypted with LUKS.  
+This only applies when the root partition is encrypted with LUKS.<br>
 Before installing grub, add the following to `/etc/default/grub`
 ```sh
 GRUB_CMDLINE_LINUX=”cryptdevice=/dev/sda3:luks_root”
 GRUB_ENABLE_CRYPTODISK=y
 ```
 
-Then, add the `encrypt`-keyword to the following line in `/etc/mkinitcpio.conf`
+Then, add the `encrypt` keyword to the following line in `/etc/mkinitcpio.conf`
 
 ```sh
 HOOKS=(base udev autodetect modconf block encrypt filesystems keyboard fsck)
@@ -174,16 +177,9 @@ HOOKS=(base udev autodetect modconf block encrypt filesystems keyboard fsck)
 
 Afterwards, run `mkinitcpio -p linux`. Now you can install GRUB.
 
-### Install GRUB - UEFI
+### Install Bootloader - GRUB for UEFI
 
-Create the directory where you want to mount the EFI partition.
-
-```sh
-mkdir /boot/efi
-mount /dev/sda1 /boot/efi
-```
-
-Then install grub like this:
+Install grub like this:
 
 ```sh
 grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot/efi --recheck
@@ -198,11 +194,32 @@ GRUB_CMDLINE_LINUX_DEFAULT="loglvel=3 quiet acpi_backlight=vendor"
 ```
 Finish the installation, exit `chroot`, unmount your partitions and reboot.
 
+### Install Bootloader - rEFInd
+
+rEFInd works really well when dual-booting and has a very easy setup.
+
+```sh
+pacman -S refind
+refind-install
+```
+
+rEFInd should have created a config at `/boot/refind_linux.conf`. If not, run `mkrlconf`.<br>
+By default, rEFInd adjusts its config relative to the live chroot environment, which needs to be fixed before the first reboot.
+Open the file in vim and make sure the standard options line contains the UUID of the root drive in `rw` mode.
+You can get the UUDI by running `blkid`.
+Load the `ucode` image before the `initramfs` image.
+
+```
+"Boot with standard options"  "rw root=UUID=2f917bda-fbef-41ca-8cf5-e87eaf4fb94e add_efi_memmap initrd=boot\intel-ucode.img initrd=boot\initramfs-linux.img"
+"Boot to single-user mode"    "rw root=UUID=2f917bda-fbef-41ca-8cf5-e87eaf4fb94e single"
+"Boot with minimal options"   "ro root=UUID=2f917bda-fbef-41ca-8cf5-e87eaf4fb94e"
+```
+
+Once successfull, you can still rEFInd with a [theme](https://github.com/bobafetthotmail/refind-theme-regular).
+
 # After the Installation
 
 ## Add a user
-
-After a plain Arch install there is only the root user. Since you don't want to be logged in as root all the time, we need to add another regular user.
 
 Edit the `sudoers`-file at `/etc/sudoers` with neovim.
 
@@ -210,7 +227,7 @@ Edit the `sudoers`-file at `/etc/sudoers` with neovim.
 sudo EDITOR=nvim visudo
 ```
 
-Uncomment the line that says `%wheel ALL=(ALL) ALL`.  
+Uncomment the line that says `%wheel ALL=(ALL) ALL`.<br>
 Then, we add a new user called `simon` to the `wheel` group we just uncommented.
 
 ```sh
@@ -280,7 +297,7 @@ This installs the pipewire sound server with the wireplumber client. Restart for
 Install wayland and a compositor that can make use of the wayland protocol and some useful services.
 
 ```sh
-sudo pacman -S wayland polkit waybar mako wl-clipboard xdg-desktop-portal, xdg-desktop-portal-wlr mesa
+sudo pacman -S wayland polkit waybar mako wl-clipboard xdg-desktop-portal, xdg-desktop-portal-wlr mesa kitty
 ```
 
 ```sh
@@ -300,6 +317,7 @@ yay -S jmtpfs
 ```sh
 pac -S texlive-most     # choose which packages to install
 pac -S biber perl-clone
+pip install Pygments    # for syntax highlighting
 ```
 
 # Clean Arch Linux
