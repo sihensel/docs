@@ -82,6 +82,13 @@ git switch main             # switch to main
 git reset --keep HEAD~2     # move main back 2 commits
 ```
 
+### Resolve all merge conflicts at once
+
+In case you want to resolve all merge conflicts at once (with `--theirs` or `--ours`).
+```sh
+git status | grep both | awk '{print $3}' | xargs git checkout --[theirs|ours]
+```
+
 ## .gitconfig
 
 Use `git ignored` to list all files marked with `--assume-unchanged`.
