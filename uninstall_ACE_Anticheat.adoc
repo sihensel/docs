@@ -1,0 +1,36 @@
+= How to Uninstall ACE Anticheat
+
+This is basically the short version of the Powershell script from https://nichegamer.com/dungeonborne-how-to-remove-ace-anti-cheat-guide/[this blog post].
+
+Open `CMD` as `admin`.
+
+Before deleting any services, check if they are still running and stop them
+----
+sc query <SERVICE_NAME>
+sc delete "AntiCheatExpert Service"
+sc delete ACE-BASE
+sc delete ACE-GAME
+----
+
+
+Delete the files at the following locations
+----
+C:\Program Files\AntiCheatExpert
+C:\ProgramData\AntiCheatExpert
+C:\Windows\System32\drivers\ACE-BASE.sys
+C:\Windows\System32\drivers\ACE-GAME.sys
+----
+
+
+Remove the following registry keys
+----
+HKEY_CURRENT_USER\SOFTWARE\AppDataLow\AntiCheatExpert
+HKEY_USERS\.DEFAULT\SOFTWARE\AppDataLow\AntiCheatExpert
+----
+
+Reboot the PC and check if the services are gone
+----
+sc query ACE-GAME
+sc query ACE-BASE
+sc query “AntiCheatExpert Service”
+----
