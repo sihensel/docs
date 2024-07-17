@@ -1,0 +1,227 @@
+= Azeroth Core
+
+Upstream docs:
+https://www.azerothcore.org/wiki/installation
+
+== Requirements
+
+.Git
+Either install `Git` or `Git for Windows`
+
+.Visual Studio Community 2022 (version 17)
+Make sure to select `Desktop development for C++ ` when selecting the components to install +
+Select the appropriate version of the Windows 10 SDK
+
+.MySQL Server Community Edition
+Launch the installer and select full (this also installs Workbench). Set the root password and finish the installation
+
+After installing, add MySQL to environment variables +
+Open `Control Panel` > `System` > `Advanced System Settings` > `Environment Variables` +
+Under `Systemvariables` select `PATH` and add the path of the MySQL install folder containing the binaries (e.g. `C:\Program Files\MySQL\MySQL Server 8.0\bin\`)
+
+.CMake
+Just install it
+
+.OpenSSL
+Install it, make sure choose The OpenSSL binaries (/bin) directory when given the choice of where to copy the OpenSSL DLLs
+
+.Boost
+Just install it +
+After installation, add a system environment variable with the name `BOOST_ROOT` that contains the Boost install folder (e.g. `C:/local/boost_1_84_0`) with *forward* slashes.
+
+
+== Install the Server Core
+
+Choose a location that contains the source files and clone the upstream Azerothcore repository (e.g. into `E:\azerothcore-wotlk`).
+
+Select one of these repos and clone them:
+
+* https://github.com/azerothcore/azerothcore-wotlk[Main upstream repo]
+* https://github.com/liyunfan1223/azerothcore-wotlk/tree/Playerbot[Fork, when using the Playerbot module]
+
+Also create an empty folder (`E:/Build`) that contains the compiled server files.
+
+
+== Install Modules
+
+Select any modules to install and clone their repositories into `E:\azerothcore-wotlk\modules`. +
+`git clone` is preferred over the Github download, as modules can be updated by just running `git pull`. +
+Make sure to follow the module's install instructions, some of them need you to manually execute SQL queries.
+
+I use the following modules:
+
+[options=header]
+|====
+|Module | Notes
+|https://github.com/liyunfan1223/mod-playerbots[PlayerBots] | Make sure you use the Azerothcore fork listed above
+|https://github.com/azerothcore/mod-autobalance[Autobalance] | Automatically adjusts enemy stats based on party size. Default settings should be fine
+|https://github.com/azerothcore/mod-ah-bot[AH Bot] | Auction house bot
+|https://github.com/azerothcore/mod-account-mounts[Account Mounts] | Makes mounts account wide
+|https://github.com/azerothcore/mod-npc-enchanter[NPC Enchanter] | Adds an NPC that can enchant gear
+|https://github.com/ZhengPeiRu21/mod-individual-progression[Individual Progression] | Emulates raid tier progression from Vanilla > TBC > Wrath
+|https://github.com/noisiver/mod-progression[Progression] | Alternative to Individual Progression, emulates progression in patches
+|====
+
+For individual progression, check the optional SQL files in `mod-individual-progression\sql` and make sure to *delete* the files that are undesired *before* starting the server for the first time.
+Make sure to check these files after every update.
+
+.I deleted the following files:
+* optional_item_stack_sizes.sql (reduces item stacks e.g. ore)
+* optional_remove_quest_markers.sql (removes map quest tracking)
+* optional_vanilla_transports.sql (restores the original ship routes auberdine <> menethil)
+* spell_restorations.sql (restores original stealth levels, but it is currently bugged)
+
+Manually import the SQL script from the `ah-bot` data folder into the database. +
+When using AH Bot, create a new character on the `ahbot` account and lookup the account ID in the `auth` database and the character ID (GID) in the `character` database. +
+Add these IDs to the ahbot config file.
+
+Some other Modules to consider:
+
+* https://github.com/azerothcore/mod-aoe-loot
+* https://github.com/azerothcore/mod-guildhouse
+* https://github.com/azerothcore/mod-gain-honor-guard
+* https://github.com/dunjeon/mod-TimeIsTime
+
+
+== Compile the Server
+
+Launch CMake and select the source folder `E:\azerothcore-wotlk` and build folder `E:/Build`. +
+Click `Configure` and choose the compiler (Visual Studio) and select `x64`. +
+Make sure that `Use default native compilers` is checked and hit `Finish`.
+
+In the newly generated list, set `TOOLS_BUILD` to `all` and click `Configure` again. Make sure there are no errors. +
+After, hit `Generate`.
+
+Now, click on `Open Project`, which opens Visual Studio. +
+In the menu at the top, click `Build` and select `Configuration Manager`.
+
+* Set `Active Solution Configuration` to `RelWithDebInfo`
+* Set `Active Solution Platform` to `x64` and then click `Close`
+
+Right-click `ALL_BUILD` in the Solution Explorer on the right sidebar and select `Clean`. +
+Now, right-click `ALL_BUILD` and select `Build` to start the compilation.
+This process takes around 10-30 minutes. Make sure to check for errors in the output.
+
+After this process is finished, close Visual Studio and CMake and navigate to `E:\Build\bin\RelWithDebInfo`. +
+Copy the .dll files and the config files from the `server-config` folder over.
+
+.The build output folder should now contain the following files
+----
+\configs\...
+\configs\modules\...
+authserver.exe
+authserver.pbd
+worldserver.exe
+worldserver.pdb
+libmysql.dll
+legacy.dll
+libssl-3-x64.dll
+----
+
+
+== Server Setup
+
+Navigate to `E:\Build\bin\RelWithDebInfo` and create a new `Data` folder. Extract the `map-data` archive into `Data`. +
+Navigate to `E:\Build\bin\RelWithDebInfo\configs` and copy all config files `.conf.dist` to `.conf`. +
+In `worldserver.conf`, set `DataDir = "E:\Build\bin\RelWithDebInfo\Data"`.
+
+
+== Database Installation
+
+Open MySQL workbench and run the following query to create the acore user.
+
+[source,sql]
+----
+DROP USER IF EXISTS 'acore'@'localhost';
+CREATE USER 'acore'@'localhost' IDENTIFIED BY 'acore' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0;
+GRANT ALL PRIVILEGES ON * . * TO 'acore'@'localhost' WITH GRANT OPTION;
+CREATE DATABASE `acore_world` DEFAULT CHARACTER SET UTF8MB4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE `acore_characters` DEFAULT CHARACTER SET UTF8MB4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE `acore_auth` DEFAULT CHARACTER SET UTF8MB4 COLLATE utf8mb4_unicode_ci;
+GRANT ALL PRIVILEGES ON `acore_world` . * TO 'acore'@'localhost' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON `acore_characters` . * TO 'acore'@'localhost' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON `acore_auth` . * TO 'acore'@'localhost' WITH GRANT OPTION;
+----
+
+Now, go to `E:\Build\bin\RelWithDebInfo` and start `authserver.exe` and `worldserver.exe` to populate the database.
+
+
+== Final Server Steps
+
+With the worldserver running, type directly into the worldserver window to create an account.
+
+----
+account create admin admin
+account set gmlevel admin 3 -1
+----
+
+This creates an account called `admin` with the password `admin`. Afterwards it sets the security level to `3` for all realms (`-1`). +
+Security level ranges between 0 (Player) and 3 (Admin).
+
+Also create a player account and an account for the auction house bot (if using that module).
+
+----
+account create player player
+account set gmlevel player 0 -1
+
+account create ahbot ahbot
+account set gmlevel ahbot 0 -1
+----
+
+== Client Setup
+
+Extract the client archive to `E:\Wotlk Client` and edit `Data\enUS\realmlist.wtf`.
+
+----
+set realmlist 127.0.0.1
+----
+
+To enable borderless fullscreen mode (or if the client just shows a black screen), add the following to `WTF\Config.wtf`.
+----
+SET gxWindow "1"
+SET gxMaximize "1"
+----
+
+Install all addons into the `Interface\AddOns` folder. +
+Now, lauch the client via `WoW.exe` and login with the admin or player user. +
+You should be able to create a character and start playing!
+
+
+== Keeping the Server and Database up to Date
+
+To update server and modules, just navigate into their respective folders and run `git pull`. +
+When using the Individual Progression module, make sure to delete unwanted SQL files. +
+Recompile the server afterwards.
+
+The database should update itself automatically as soon as you launch the worldserver.
+
+
+== Changes to the Database
+
+.Increase drop chance of 6-slot bags
+[source,sql]
+----
+-- the reference loot table 11111 is the loot table for the small 6-slot bags
+SELECT * FROM acore_world.reference_loot_template WHERE entry = 11111;
+
+-- select all creatures that use that loot table
+SELECT * FROM acore_world.creature_loot_template WHERE reference = 11111;
+
+-- Drop chance is really low (max 0.2%)
+SELECT DISTINCT chance FROM acore_world.creature_loot_template WHERE reference = 11111;
+
+-- For comparison, the drop chance for 8-slot bags is between 0.5% and 1%:
+SELECT * FROM acore_world.creature_loot_template WHERE reference = 44009;
+SELECT * FROM acore_world.reference_loot_template WHERE entry = 44009;
+
+-- Fix:
+UPDATE acore_world.creature_loot_template SET creature_loot_template.chance=0.7 WHERE reference = 11111;
+----
+
+.Increase amount of available items of the AH-bot
+[source,sql]
+----
+-- check these values first!
+SELECT * FROM acore_world.mod_auctionhousebot;
+UPDATE acore_world.mod_auctionhousebot SET mod_auctionhousebot.minitems = 2500, mod_auctionhousebot.maxitems = 2500;
+----

@@ -1,0 +1,418 @@
+:source-highlighter: highlight.js
+
+= Vmangos
+
+https://github.com/vmangos/core +
+https://github.com/vmangos/wiki/wiki/Compiling-on-Windows +
+https://github.com/vmangos/wiki/wiki/Getting-it-working
+
+== Install Vmangos on Arch Linux
+
+=== Server Setup
+
+Install the following prerequisites:
+
+[source,sh]
+----
+pac -Sy --needed gcc tbb git cmake mariadb coreutils zlib
+yay -S --mflags "--nocheck" ace
+----
+
+[source,sh]
+----
+export ACE_ROOT=/usr/include/ace
+export TBB_ROOT_DIR=/usr/include/tbb
+----
+
+[source,sh]
+----
+cd ~/Games
+mkdir vmangos-core      # source files
+mkdir vmangos-build     # build files
+mkdir vmangos-server    # binaries
+----
+
+[source,sh]
+----
+git clone -b development https://github.com/vmangos/core vmangos-core
+----
+
+.Edit CMakeLists.txt to change the C++ standard
+----
+vim vmangos-core/CMakeLists.txt
+
+# replace
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
+----
+
+[source,sh]
+----
+cd vmangos-build
+
+cmake ~/Games/vmangos-core -DDEBUG=0 -DSUPPORTED_CLIENT_BUILD=5875 -DUSE_EXTRACTORS=0 -DCMAKE_INSTALL_PREFIX=~/Games/vmangos-server
+
+make -j8
+make install
+----
+
+.Copy map data and config files
+----
+cd ~/Games/vmangos-server
+cp -r ~/Games/map-data/* bin
+
+cp etc/mangosd.conf.dist etc/mangosd.conf
+cp etc/realmd.conf.dist etc/realmd.conf
+----
+
+NOTE: Don't forget to set the `DataDir` option in `~/Games/vmangos-server/etc/mangos.conf`.
+
+
+=== Database Setup
+
+.Init Mariadb
+----
+sudo mariadb-install-db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
+----
+
+.Edit Mariadb config
+----
+sudo nvim /etc/my.cnf.d/client.cnf
+
+[client-mariadb]
+auto-rehash
+----
+
+.Create Vmangos user and database tables
+[source,sql]
+----
+CREATE USER 'mangos'@'localhost' IDENTIFIED BY 'mangos';
+GRANT ALL PRIVILEGES ON * . * TO 'mangos'@'localhost';
+
+CREATE DATABASE `logs` DEFAULT CHARACTER SET UTF8MB4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE `mangos` DEFAULT CHARACTER SET UTF8MB4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE `realmd` DEFAULT CHARACTER SET UTF8MB4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE `characters` DEFAULT CHARACTER SET UTF8MB4 COLLATE utf8mb4_unicode_ci;
+
+GRANT ALL PRIVILEGES ON `logs` . * TO 'mangos'@'localhost';
+GRANT ALL PRIVILEGES ON `characters` . * TO 'mangos'@'localhost';
+GRANT ALL PRIVILEGES ON `mangos` . * TO 'mangos'@'localhost';
+GRANT ALL PRIVILEGES ON `realmd` . * TO 'mangos'@'localhost';
+FLUSH PRIVILEGES;
+----
+
+Download the latest version from https://github.com/brotalnia/database and unzip it.
+
+.Init Vmangos tables
+[source,sh]
+----
+cd vmangos-core/sql
+mariadb -u mangos -pmangos --database=characters < characters.sql
+mariadb -u mangos -pmangos --database=realmd < logon.sql
+mariadb -u mangos -pmangos --database=logs < logs.sql
+mariadb -u mangos -pmangos --database=mangos < world_full_14_june_2021.sql
+----
+
+.Modify tables
+[source,sh]
+----
+sudo -i
+mariadb
+----
+
+[source,sql]
+----
+use mangos;
+
+ALTER TABLE locales_item
+MODIFY COLUMN name_loc1 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+MODIFY COLUMN name_loc2 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+MODIFY COLUMN name_loc3 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+MODIFY COLUMN name_loc4 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+MODIFY COLUMN name_loc5 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+MODIFY COLUMN name_loc6 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+MODIFY COLUMN name_loc7 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+MODIFY COLUMN name_loc8 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci';
+
+ALTER TABLE locales_creature
+MODIFY COLUMN name_loc1 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+MODIFY COLUMN name_loc2 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+MODIFY COLUMN name_loc3 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+MODIFY COLUMN name_loc4 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+MODIFY COLUMN name_loc5 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+MODIFY COLUMN name_loc6 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+MODIFY COLUMN name_loc7 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+MODIFY COLUMN name_loc8 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci';
+
+ALTER TABLE locales_gameobject
+MODIFY COLUMN name_loc1 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+MODIFY COLUMN name_loc2 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+MODIFY COLUMN name_loc3 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+MODIFY COLUMN name_loc4 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+MODIFY COLUMN name_loc5 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+MODIFY COLUMN name_loc6 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+MODIFY COLUMN name_loc7 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+MODIFY COLUMN name_loc8 VARCHAR(100) NULL DEFAULT '' COLLATE 'utf8_general_ci';
+----
+
+.Apply migrations
+----
+cd ~/Games/vmangos-core/sql/migrations
+./merge.sh
+mariadb -u mangos -pmangos --database=mangos < world_db_updates.sql
+mariadb -u mangos -pmangos --database=logs < logs_db_updates.sql
+mariadb -u mangos -pmangos --database=characters < characters_db_updates.sql
+mariadb -u mangos -pmangos --database=realmd < logon_db_updates.sql
+----
+
+.Add realm
+[source,sql]
+----
+use realmd;
+
+INSERT INTO `realmd`.`realmlist` (`id`,`name`, `address`, `localAddress`, `localSubnetMask`, `icon`, `timezone`, `realmbuilds`) VALUES ('1','VMaNGOS', '127.0.0.1', '127.0.0.1', '255.255.255.0', '1', '2', '5875 6005 6141');
+----
+
+
+=== Client Setup
+
+Enable the multilib repository and install the following prerequisites.
+
+[source,sh]
+----
+sudo pacman -Sy wine-staging wine-mono winetricks
+sudo pacman -Sy giflib lib32-giflib libpng lib32-libpng libldap lib32-libldap gnutls lib32-gnutls mpg123 lib32-mpg123 openal lib32-openal v4l-utils lib32-v4l-utils libpulse lib32-libpulse libgpg-error lib32-libgpg-error alsa-plugins lib32-alsa-plugins alsa-lib lib32-alsa-lib libjpeg-turbo lib32-libjpeg-turbo sqlite lib32-sqlite libxcomposite lib32-libxcomposite libxinerama lib32-libgcrypt libgcrypt lib32-libxinerama ncurses lib32-ncurses opencl-icd-loader lib32-opencl-icd-loader libxslt lib32-libxslt libva lib32-libva gtk3 lib32-gtk3 gst-plugins-base-libs lib32-gst-plugins-base-libs vulkan-icd-loader lib32-vulkan-icd-loader alsa-utils gnutls libpng wine-mono lib32-libxml2 lib32-mpg123 lib32-lcms2 lib32-giflib lib32-libpng lib32-gnutls lib32-libpulse lib32-fontconfig lib32-libxcomposite lib32-libxrender  lib32-libxslt lib32-gnutls lib32-libxi lib32-libxrandr lib32-libxinerama lib32-libcups lib32-freetype2 lib32-libpng lib32-openal python-pyopencl lib32-v4l-utils lib32-libxcursor lib32-mpg123 lib32-sdl lib32-mesa-libgl --needed
+----
+
+Restart your machine.
+
+==== Wine
+
+[source,sh]
+----
+export WINEPREFIX=/home/simon/Games/wow
+export WINEARCH=win64
+
+mkdir -p /home/simon/Games/wow
+winecfg
+winetricks -q --force dotnet472
+----
+
+.Download https://github.com/doitsujin/dxvk[dxvk] and copy the .dll files to drive_c
+[source,sh]
+----
+cp x64/* $WINEPREFIX/drive_c/windows/system32
+cp x32/* $WINEPREFIX/drive_c/windows/syswow64
+----
+
+Afterwards, run `winecfg` and set the Windows version to Windows 7. +
+Go to `graphics`, tick `Allow the window manager to control the windows` +
+Go to `Staging` and tick the first four options.
+
+.Add the following libraries in the Wine config window
+----
+d3d10
+d3d10_1
+d3d10core
+d3d11
+d3d12
+d3d8
+d3d9
+dxgi
+----
+
+.Install DirectX
+[source,sh]
+----
+wine dxwebsetup.exe
+----
+
+.Copy the Client files
+[source,sh]
+----
+mkdir $WINEPREFIX/drive_c/wow
+cp -r Client $WINEPREFIX/drive_c/wow
+----
+
+.Apply https://github.com/brndd/vanilla-tweaks[vanilla-tweaks]
+[source,sh]
+----
+./vanilla-tweaks $WINEPREFIX/drive_c/wow/Client/WoW.exe
+cp WoW_tweaked.exe $WINEPREFIX/drive_c/wow/Client
+----
+
+.launch-wow.sh
+[source,sh]
+----
+#!/usr/bin/bash
+
+WINEPREFIX=/home/simon/Games/wow WINEARCH=win64 wine /home/simon/Games/wow/drive_c/wow/Client/WoW_tweaked.exe
+----
+
+Don't forget to adjust the content of `realmlist.wtf`. +
+If the image is cropped, adjust the resolution settings in `WTF/Config.wtf`.
+
+Also look into https://github.com/hannesmann/vanillafixes.
+
+
+== Install Vmangos on Windows
+
+=== Server Setup
+
+==== Prerequisites
+
+Install CMake, Visual Studio 22, Git, C++ Redistributables, .NET Framwork, 7zip, MySQL 5.5 and HeidiSQL.
+
+Download the ACE *micro* release from https://download.dre.vanderbilt.edu/[here]. Extract the archive to `C:\ACE_wrappers`.
+
+Now go into `C:\ACE_wrappers\ace`, create a file named `config.h` and paste this into it:
+
+----
+#include "ace/config-win32.h"
+----
+
+Open `C:\ACE_wrappers\ACE_wrappers_vs2019.sln` in Visual Studio. Switch the configuration to `Release`. Then, hit Build > Build Solution.
+When prompted to upgrade the version, hit yes.
+
+Download the latest TBB stable release from https://github.com/oneapi-src/oneTBB/releases [Github] and extract it to `C:\tbb`.
+
+Now, add the following *system* environment variables.
+
+----
+ACE_ROOT=C:\ACE_wrappers\
+TBB_ROOT=C:\tbb\
+----
+
+
+==== Building the Server
+
+.Create three folders
+----
+E:\vmangos-core		# source code
+E:\vmangos-build	# build data
+E:\vmangos-server	# server binaries
+----
+
+.Download the server source code into `vmangos-core`.
+----
+git clone -b development http://github.com/vmangos/core vmangos-core
+----
+
+Open CMake and select `vmangos-core` as the source, and `vmangos-build` as the output folder. +
+Also make sure to set `CMAKE_INSTALL_PREFIX` and `PREFIX` to `vmangos-server`. +
+Hit `Configure`, `Generate` and `Open Project`, which opens Visual Studio.
+
+In the solutions explorer to the right, expand `CMakePredefinedTargets`. +
+In the top toolbar, switch `Debug` to `Release` and hit `Build` > `Build Solution`.
+This starts the compile process, which should not take long.
+
+After compilation is complete, right click `INSTALL` in the solutions explorer and hit `Build`, which creates the server binaries.
+
+Now, copy `C:\ACE_wrappers\lib\ACE.dll` to `E:\vmangos-server`. +
+Then, copy all `.dll` files from `C:\tbb\redist\intel64\vc14` to `E:\vmangos-server`.
+
+==== Maps and DBC
+
+Copy all folders from `Requirements\map-data` to `E:\vmangos-server`. +
+These are from the https://www.ownedcore.com/forums/world-of-warcraft/world-of-warcraft-emulator-servers/wow-emu-general-releases/613280-elysium-core-1-12-repack-including-mmaps-optional-vendors.html[Brotalnia] repack, which is included in the requirements for reference.
+
+
+=== Database Setup
+
+Install MySQL 5.5 and HeidiSQL. +
+Open HeidiSQL and run the following script, which creates a mangos user and all necessary tables.
+
+[source,sql]
+----
+CREATE USER 'mangos'@'localhost' IDENTIFIED BY 'mangos';
+GRANT ALL PRIVILEGES ON * . * TO 'mangos'@'localhost';
+
+CREATE DATABASE `logs` DEFAULT CHARACTER SET UTF8MB4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE `mangos` DEFAULT CHARACTER SET UTF8MB4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE `realmd` DEFAULT CHARACTER SET UTF8MB4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE `characters` DEFAULT CHARACTER SET UTF8MB4 COLLATE utf8mb4_unicode_ci;
+
+GRANT ALL PRIVILEGES ON `logs` . * TO 'mangos'@'localhost';
+GRANT ALL PRIVILEGES ON `characters` . * TO 'mangos'@'localhost';
+GRANT ALL PRIVILEGES ON `mangos` . * TO 'mangos'@'localhost';
+GRANT ALL PRIVILEGES ON `realmd` . * TO 'mangos'@'localhost';
+FLUSH PRIVILEGES;
+----
+
+Go to `E\vmangos-core\sql` and apply the `.sql`-scripts to their respective databases. +
+Keep in mind that `logon.sql` refers to the `realmd` database. +
+Download the latest world database from https://github.com/brotalnia/database[Github] and apply it to the `mangos` database.
+
+Go to `E:\Vmangos-core\sql\migrations` and run `merge.bat`. +
+This creates four files, which need to be applied to their respective databases.
+
+----
+characters_db_updates.sql
+logon_db_updates.sql
+logs_db_updates.sql
+world_db_updates.sql
+----
+
+Now, create your realm in the `realmlist` table of the `realmd` database. +
+In HeidiSQL, select the table and switch to the data tab. Right click and select `Insert row`, which automatically fills in the default values.
+You only need to provide the realm name.
+
+
+=== Update Config files
+
+Copy `mangosd.conf.dist` to `mangosd.conf`, and `realmd.conf.dist` to `realmd.conf`. +
+Edit the config files and make sure the SQL login strings match the user and port you assigned. +
+Also make sure to set the `DataDir` option to the folder containing the map data.
+
+Once the mangos server is running, create a new account by typing into the console window.
+If you want to make use of the playerbots, you need gmlevel 6. In this case, also make sure to set `GM.CheatGod = 0` in `mangosd.conf` so you can play the game normally.
+
+----
+account create admin admin
+account set gmlevel admin 6
+----
+
+
+=== Client Setup
+
+Ectract the client to `E:\vmangos-client`. +
+Edit `realmlist.wtf` and insert `set realmlist 127.0.0.1`.
+
+.Apply fixes for the 1.12 client
+* Extract the `nampower.dll` into the client root folder.
+* Extract `vanilla-tweaks.exe` into the client root dir and drag `WoW.exe` ontop of it. This creates `WoW_tweaked.exe`.
+* Extract `vanillafixes` into the client root folder. Create a shortcut for `VanillaFixes.exe` (e.g. in the start menu) and edit its properties. In the `Target` field, insert `WoW_tweaked.exe` at the end. This makes sure `VanillaFixes.exe` launches the tweaked WoW executable.
+
+Make sure to always launch the client via `VanillaFixes.exe`.
+
+Make sure to launch the game first and create a character to create the necessary folder structure. +
+Copy `Config.wtf` to the `WTF` folder. +
+Copy `bindings-cache.wtf`, `SavedVariables.lua` and `SavedVariables` to `WTF\Account\<Account Name>`.
+
+Install all Addons to `Interface\AddOns`.
+Make sure to set the Addon memory limit to 0 in the game's addon selection menu at the character screen.
+
+Shaguplates can be configured with `/sp`. +
+RogueFocus can be configured with `/rfc`.
+
+== Useful commands and macros
+
+.Useful partybot commands
+----
+.partybot add tank|dps|healer|classname
+.partybot attackstart
+.partybot attackstop
+.partybot cometome
+----
+
+.Macro that removes the annoying fish transformation and enables god mode for bots
+----
+.deleteitem 19979
+.cheat god on
+----
+
+.Macro for Walocks and Hunters
+----
+/cast Immolate(Rank 1)
+/script PetAttack(target)
+----
