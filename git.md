@@ -89,6 +89,18 @@ In case you want to resolve all merge conflicts at once (with `--theirs` or `--o
 git status | grep both | awk '{print $3}' | xargs git checkout --[theirs|ours]
 ```
 
+### Apply multiple patches with Git
+
+Can be useful when multiple patch files should be merged into one.\
+Checkout the commit or release tag of the Git repo to apply the patches to.
+Afterward, the whole diff between all patches and the chosen commit/release tag can be created.
+
+```sh
+git reset --hard 26.2.2
+git am ~/Downloads/patch_*.diff
+git diff 26.2.2 > big_patch.patch
+```
+
 ## .gitconfig
 
 Use `git ignored` to list all files marked with `--assume-unchanged`.
