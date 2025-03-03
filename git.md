@@ -106,23 +106,34 @@ git diff 26.2.2 > big_patch.patch
 Use `git ignored` to list all files marked with `--assume-unchanged`.
 
 ```ini
-[user]
-    email = user@example.com
-    name = Peter Griffin
+[alias]
+    ignored = !git ls-files -v | grep "^[[:lower:]]"
 [commit]
     verbose = true
 [core]
     editor = nvim
+[diff]
+    algorithm = histogram
+    colorMoved = plain
+    mnemonicPrefix = true
+    renames = true
 [fetch]
+    all = true
     prune = true
+    pruneTags = true
+[gitreview]
+    username = pgriffin
+[http]
+    postBuffer = 157286400
+[init]
+    defaultBranch = main
 [log]
     decorate = short
 [status]
     showStash = true
-[http]
-    postBuffer = 157286400
-[alias]
-    ignored = !git ls-files -v | grep "^[[:lower:]]"
+[user]
+    email = peter@griffin.com
+    name = Peter Griffin
 ```
 
 ## Set up SSH with Git
