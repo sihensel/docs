@@ -8,7 +8,7 @@ pacman -Syu | Upgrade whole system
 pacman -Ss | search package
 pacman -R | remove package
 pacman -Rs | remove package with dependencies
-pacman -Rnscd | remove package and all that belongs to it
+pacman -Runsc | remove package and all that belongs to it
 pacman -Q | all installed packages
 pacman -Qe | all explicitly installed packages
 pacman -Qq | all installed packages without versions

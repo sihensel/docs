@@ -221,7 +221,7 @@ d3d9
 dxgi
 ----
 
-.Install DirectX
+.Download and Install DirectX
 [source,sh]
 ----
 wine dxwebsetup.exe

@@ -69,17 +69,17 @@ git reset --hard HEAD@{2}
 Can be useful when you forgot to create a new branch before making changes.<br>
 Make sure you stay on your current branch, e.g. `main` before doing this.
 ```sh
-git branch newbranch        # create the new branch
-git reset --keep HEAD~2     # move the current branch back 2 commits
-git switch newbranch        # switch to the new branch
+git branch featurebranch    # create the new feature branch
+git reset --keep HEAD~X     # move the current branch back X commits
+git switch featurebranch    # switch to the new branch
 ```
 
 If your feature branch already exists, the steps are a bit different.
 ```sh
-git switch existingbranch   # switch to your existing feature branch
+git switch featurebranch    # switch to your existing feature branch
 git merge main              # add the new commits to the existing branch
 git switch main             # switch to main
-git reset --keep HEAD~2     # move main back 2 commits
+git reset --keep HEAD~X     # move main back X commits
 ```
 
 ### Resolve all merge conflicts at once
@@ -96,9 +96,9 @@ Checkout the commit or release tag of the Git repo to apply the patches to.
 Afterward, the whole diff between all patches and the chosen commit/release tag can be created.
 
 ```sh
-git reset --hard 26.2.2
-git am ~/Downloads/patch_*.diff
-git diff 26.2.2 > big_patch.patch
+git reset --hard 26.2.2             # reset the working tree
+git am ~/Downloads/patch_*.diff     # apply all patches
+git diff 26.2.2 > big_patch.patch   # get the diff between HEAD and the tag
 ```
 
 ## .gitconfig
@@ -158,51 +158,3 @@ Or clone a new repo with:
 ```sh
 git clone git@github.com:username/your-repository.git
 ```
-
-## Cleanup Git Repo
-
-If your repo contains a lot of deleted binary files (e.g. images, compiled objects, etc.), your `.git` directory can become quite big, since Git still keeps track of them. These objects can be cleaned from git with the help of [BFG](https://rtyley.github.io/bfg-repo-cleaner/). This short guide follows [this post](https://www.tikalk.com/posts/2017/04/19/delete-binaries-from-git-repository/).
-
-To find the biggest files in your repo, use the [git-tools](https://github.com/ivantikal/git-tools) scripts.
-This step is optional, but can provide good insights.
-
-```sh
-git clone https://github.com/ivantikal/git-tools.git
-```
-
-To get the 50 biggest files, run
-
-```sh
-./git-tools/clean-binaries/get_biggest_files_in_history.sh -r ./repo_with_binaries/ -n 50
-```
-
-This script will write the output to a `.txt` file.
-Afterwards, we can use `BFG` to clean our repo. To run this script, install the `jre-openjdk-headless` package (on Arch).</br>
-Download the file (either via the website or with `curl`)
-
-```sh
-curl -LO https://repo1.maven.org/maven2/com/madgag/bfg/1.14.0/bfg-1.14.0.jar
-```
-
-Clone your repo, using the `--mirror` prefix, which loads all refs from Github.
-
-```
-git clone --mirror git@github.com:user/repo.github
-```
-
-This will create a directory with the string `.git` at the end. This is our target for `BFG`.
-To delete all refs for files bigger that 50 MB, run
-
-```sh
-java -jar bfg-1.14.0.jar --strip-blobs-bigger-than 50M your_repo.git
-```
-
-Now that Git realizes that it keeps track of unnecessary files, run
-
-```sh
-cd your_repo.git
-git reflog expire --expire=now --all && git gc --prune=now --aggressive
-```
-
-As a last step, perform a `git push` to update the remote repo.
-Make sure to delete all old local copies of the repo and a do fresh clone, to avoid reintroducing old binaries into the git history.
