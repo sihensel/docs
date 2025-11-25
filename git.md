@@ -57,6 +57,17 @@ git commit --fixup=<COMMIT_ID>              # Commit a fix for a specific commit
 git rebase -i --autosquash <COMMIT_ID>~1    # rebase the fixup
 ```
 
+### Remove file from old commit
+
+You can remove a file from an older commit using its commit ID/hash.
+```sh
+git checkout <COMMIT_ID>
+git reset --soft HEAD^
+git restore --staged <path/to/file>
+git commit -c ORIG_HEAD --no-edit
+git rebase --onto HEAD <COMMIT_ID> <DESTINATION-BRANCH>
+```
+
 ### Undo a rebase
 
 Check `git reflog` and search for the commit before the rebase and reset the branch to it. Suppose the old commit was `HEAD@{2}`:
