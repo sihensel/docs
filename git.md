@@ -123,6 +123,7 @@ Use `git ignored` to list all files marked with `--assume-unchanged`.
     verbose = true
 [core]
     editor = nvim
+    excludesfile = ~/.gitignore
 [diff]
     algorithm = histogram
     colorMoved = plain
@@ -134,14 +135,26 @@ Use `git ignored` to list all files marked with `--assume-unchanged`.
     pruneTags = true
 [gitreview]
     username = pgriffin
+[help]
+    autocorrect = prompt
 [http]
     postBuffer = 157286400
 [init]
     defaultBranch = main
 [log]
     decorate = short
+[push]
+    autoSetupRemote = true
+    default = simple
+    followTags = true
+[rebase]
+    autoSquash = true
+    autoStash = true
+    updateRefs = true
 [status]
     showStash = true
+[tag]
+    sort = version:refname
 [user]
     email = peter@griffin.com
     name = Peter Griffin
